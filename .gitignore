@@ -1,0 +1,13 @@
+# ===== IDEs =====
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ===== Sistema Operacional =====
+.DS_Store
+Thumbs.db
+
+# ===== Variáveis de ambiente / segredos =====
+**/.env
