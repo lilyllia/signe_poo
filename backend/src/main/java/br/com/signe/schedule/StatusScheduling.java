@@ -1,4 +1,4 @@
-package SalonBeauty;
+package schedule;
 
 public enum StatusScheduling {
 

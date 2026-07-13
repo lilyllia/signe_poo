@@ -1,4 +1,6 @@
-package SalonBeauty;
+package schedule;
+
+import SalonBeauty.Specialist;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
