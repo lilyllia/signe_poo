@@ -1,0 +1,24 @@
+package salonBeauty;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class ResisterEmployees {
+
+	public static void main(String[] args) {
+		Employees employees = new Employees("Leila", "654.985.012-25", "02", "Leila2023@gmail.com", "(88) 9768-5492", "Rua João Batista, 402", 1.255);
+
+		employees.showDetails();
+		
+		Set<Specialization> specialization = new HashSet<>();
+		specialization.add(Specialization.HAIRDRESSER);
+		specialization.add(Specialization.COLORING);
+		
+		Specialist specialist = new Specialist("Claudia", "867.094.651-34", "01", "Claudinha02@gmail.com", "(88) 9367-8951", "Rua Sebastião Augusto, 32", 3.105, specialization);
+	
+		System.out.println(" ");
+		
+		specialist.showDetails();
+	}
+	
+}
