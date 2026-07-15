@@ -1,7 +1,13 @@
 package br.com.signe;
 
-import br.com.signe.client.*;
-
+import br.com.signe.client.domain.AnamnesisRecord;
+import br.com.signe.client.domain.Client;
+import br.com.signe.client.domain.HairProfile;
+import br.com.signe.client.domain.enums.*;
+import br.com.signe.client.dto.ClientProfileDTO;
+import br.com.signe.client.repository.AnamnesisRecordRepository;
+import br.com.signe.client.repository.ClientRepository;
+import br.com.signe.client.service.ClientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

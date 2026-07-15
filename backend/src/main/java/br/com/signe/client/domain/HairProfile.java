@@ -1,5 +1,9 @@
-package br.com.signe.client;
+package br.com.signe.client.domain;
 
+import br.com.signe.client.domain.enums.HairLength;
+import br.com.signe.client.domain.enums.HairPorosity;
+import br.com.signe.client.domain.enums.HairShape;
+import br.com.signe.client.domain.enums.HairThickness;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

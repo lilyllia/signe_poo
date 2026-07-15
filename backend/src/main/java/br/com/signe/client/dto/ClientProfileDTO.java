@@ -1,4 +1,6 @@
-package br.com.signe.client;
+package br.com.signe.client.dto;
+
+import br.com.signe.client.domain.AnamnesisRecord;
 
 import java.time.LocalDate;
 import java.util.UUID;

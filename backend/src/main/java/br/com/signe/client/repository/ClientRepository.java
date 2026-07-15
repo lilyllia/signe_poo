@@ -1,5 +1,6 @@
-package br.com.signe.client;
+package br.com.signe.client.repository;
 
+import br.com.signe.client.domain.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
