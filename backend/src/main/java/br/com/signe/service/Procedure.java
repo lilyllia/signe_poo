@@ -2,17 +2,17 @@ package br.com.signe.service;
 
 public class Procedure {
     private String name;
-    private String category;
+    private ProcedureCategory category;
     private double cost;
     private String rawMaterial;
     private int averageDuration;
 
-    public Procedure(String name, String category, double cost, String rawMaterial, int averageDuration){
+    public Procedure(String name, ProcedureCategory category, double cost, String rawMaterial, int averageDuration){
         this.name = name;
         this.category = category;
         this.cost = cost;
         this.rawMaterial = rawMaterial;
-        this.averageDuration = averageDuration;
+        this.averageDuration = averageDuration; //minutes
     }
 
     public String getName() {
@@ -23,11 +23,11 @@ public class Procedure {
         this.name = name;
     }
 
-    public String getCategory() {
+    public ProcedureCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void ProcedureCategory(ProcedureCategory category) {
         this.category = category;
     }
 
