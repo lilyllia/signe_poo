@@ -1,23 +1,25 @@
-package schedule;
+package br.com.signe.schedule;
 
-import SalonBeauty.Specialist;
-
+import br.com.signe.client.Client;
+import br.com.signe.service.Procedure;
+import br.com.signe.employee.Specialist;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class Scheduling {
 
     private Client client;
     private Specialist specialist;
-    private Service service;
-    private LocalDateTime start;
-    private LocalDateTime finish;
-    private StatusScheduling status;
+    private Procedure procedure;
+    private LocalTime start;
+    private LocalTime finish;
+    private schedule.StatusScheduling status;
 
-    public Scheduling(Client client, Specialist specialist, Service service, LocalDateTime start, LocalDateTime finish) {
+    public Scheduling(Client client, Specialist specialist, Procedure procedure, LocalTime start, LocalTime finish) {
         this.client = Objects.requireNonNull(client, "Cliente é obrigatório.");
         this.specialist = Objects.requireNonNull(specialist, "Especialista é obrigatório.");
-        this.service = Objects.requireNonNull(service, "Serviço é obrigatório.");
+        this.procedure = Objects.requireNonNull(procedure, "Procedimento é obrigatório.");
         this.start = Objects.requireNonNull(start, "Data inicial é obrigatória.");
         this.finish = Objects.requireNonNull(finish, "Data final é obrigatória.");
 
@@ -25,7 +27,7 @@ public class Scheduling {
             throw new IllegalArgumentException(
                     "O horário final deve ser posterior ao horário inicial.");
         }
-        this.status = StatusScheduling.SCHEDULED;
+        this.status = schedule.StatusScheduling.SCHEDULED;
     }
     public Client getClient() {
         return client;
@@ -35,50 +37,50 @@ public class Scheduling {
         return specialist;
     }
 
-    public Service getService() {
-        return service;
+    public Procedure getProcedure() {
+        return procedure;
     }
 
-    public LocalDateTime getFinish() {
+    public LocalTime getFinish() {
         return finish;
     }
 
-    public LocalDateTime getStart() {
+    public LocalTime getStart() {
         return start;
     }
 
-    public StatusScheduling getStatus() {
+    public schedule.StatusScheduling getStatus() {
         return status;
     }
 
     public void confirmScheduling(){
-        if(status != StatusScheduling.SCHEDULED){
+        if(status != schedule.StatusScheduling.SCHEDULED){
             throw new IllegalStateException("Só é possivel confirmar horários AGENDADOS.");
         }
-        status = StatusScheduling.CONFIRMED;
+        status = schedule.StatusScheduling.CONFIRMED;
     }
 
     public void cancelScheduling(){
-        if(status != StatusScheduling.SCHEDULED && status != StatusScheduling.CONFIRMED){
+        if(status != schedule.StatusScheduling.SCHEDULED && status != schedule.StatusScheduling.CONFIRMED){
             throw new IllegalStateException("Só é possivel cancelar horários AGENDADOS ou CONFIRMADOS.");
         }
-        status = StatusScheduling.CANCELLED;
+        status = schedule.StatusScheduling.CANCELLED;
     }
 
     public void completedService(){
-        if(status != StatusScheduling.CONFIRMED){
+        if(status != schedule.StatusScheduling.CONFIRMED){
             throw new IllegalStateException("Só é possivel completar serviços de horários CONFIRMADOS.");
         }
-        status = StatusScheduling.COMPLETED;
+        status = schedule.StatusScheduling.COMPLETED;
     }
 
     public void missScheduling(){
 
-        if(status != StatusScheduling.CONFIRMED){
+        if(status != schedule.StatusScheduling.CONFIRMED){
             throw new IllegalStateException(
                     "Somente horários confirmados podem ser marcados como falta.");
         }
 
-        status = StatusScheduling.MISSED;
+        status = schedule.StatusScheduling.MISSED;
     }
 }

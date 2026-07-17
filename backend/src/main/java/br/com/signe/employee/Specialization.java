@@ -1,4 +1,4 @@
-package SalonBeauty;
+package br.com.signe.employee;
 
 public enum Specialization {
 
