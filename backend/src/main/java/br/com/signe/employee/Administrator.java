@@ -5,7 +5,7 @@ import jakarta.persistence.DiscriminatorValue;
 
 @Entity
 @DiscriminatorValue("ADMINISTRATOR")
-public class Administrator extends Employees {
+public class Administrator extends Employees implements CalculateSalary{
 
     public Administrator() {}
 
@@ -16,5 +16,10 @@ public class Administrator extends Employees {
     @Override
     public void showDetails() {
         super.showDetails();
+    }
+
+    @Override
+    public double calculateSalary() {
+        return getBaseSalary();
     }
 }
