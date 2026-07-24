@@ -1,15 +1,11 @@
 package br.com.signe.employee;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.Set;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
-@Getter
 @Entity
 @DiscriminatorValue("SPECIALIST")
 public class Specialist extends Employees {
@@ -20,7 +16,6 @@ public class Specialist extends Employees {
     @Column(nullable = false)
     private LocalTime finish;
 
-    @Setter
     @ElementCollection
     @CollectionTable(name = "specialist_specialization", joinColumns = @JoinColumn(name = "specialist_id"))
     @Column(name = "specialization")
@@ -29,18 +24,42 @@ public class Specialist extends Employees {
 
     public Specialist() {}
 
-    public Specialist(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, LocalTime start, LocalTime finish, Set<Specialization> specialization) {
-        super(name, cpf, id, email, hasPhone, address, baseSalary);
+    public Specialist(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, EmployeeStatus status, LocalTime start, LocalTime finish, Set<Specialization> specialization) {
+        super(name, cpf, id, email, hasPhone, address, baseSalary, status);
         this.start = start;
         this.finish = finish;
         this.specialization = specialization;
     }
 
-    public boolean isWithinWorkingHours(LocalTime startScheduling, LocalTime finishScheduling) {
+    public LocalTime getStart() {
+        return start;
+    }
 
+    public void setStart(LocalTime start) {
+        this.start = start;
+    }
+
+    public LocalTime getFinish() {
+        return finish;
+    }
+
+    public void setFinish(LocalTime finish) {
+        this.finish = finish;
+    }
+
+    public Set<Specialization> getSpecialization() {
+        return specialization;
+    }
+
+    public void setSpecialization(Set<Specialization> specialization) {
+        this.specialization = specialization;
+    }
+
+    public boolean isWithinWorkingHours(LocalTime startScheduling, LocalTime finishScheduling) {
         return !startScheduling.isBefore(this.start)
                 && !finishScheduling.isAfter(this.finish);
     }
+
 
     @Override
     public void showDetails() {

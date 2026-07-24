@@ -1,11 +1,7 @@
 package br.com.signe.employee;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
 @Entity
     @DiscriminatorValue("EMPLOYEE")
     public class Employees extends Person {
@@ -19,10 +15,26 @@ import lombok.Setter;
 
         public Employees() {}
 
-    public Employees(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary) {
+    public Employees(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, EmployeeStatus status) {
         super(name, cpf, id, email, hasPhone, address);
         this.baseSalary = baseSalary;
-        this.status = br.com.signe.employee.EmployeeStatus.ACTIVE;
+        this.status = status;
+    }
+
+    public double getBaseSalary() {
+        return baseSalary;
+    }
+
+    public void setBaseSalary(double baseSalary) {
+        this.baseSalary = baseSalary;
+    }
+
+    public EmployeeStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EmployeeStatus status) {
+        this.status = status;
     }
 
     @Override

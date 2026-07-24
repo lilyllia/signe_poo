@@ -1,10 +1,7 @@
 package br.com.signe.employee;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
+import jakarta.persistence.*;
+
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "person_type", discriminatorType = DiscriminatorType.STRING)
@@ -40,6 +37,55 @@ public abstract class Person {
         this.hasPhone = hasPhone;
         this.address = address;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getHasPhone() {
+        return hasPhone;
+    }
+
+    public void setHasPhone(String hasPhone) {
+        this.hasPhone = hasPhone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
 
     public void showDetails() {
         System.out.println("Nome: " + this.name);
