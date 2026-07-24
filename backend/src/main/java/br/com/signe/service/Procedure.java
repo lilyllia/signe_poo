@@ -1,11 +1,33 @@
 package br.com.signe.service;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="procedure")
 public class Procedure {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ProcedureCategory category;
+
+    @Column(nullable = false)
     private double cost;
+
+    @Column(name = "raw_material")
     private String rawMaterial;
+
+    @Column(name = "average_duration")
     private int averageDuration;
+
+    protected Procedure(){
+    }
 
     public Procedure(String name, ProcedureCategory category, double cost, String rawMaterial, int averageDuration){
         this.name = name;
@@ -13,6 +35,10 @@ public class Procedure {
         this.cost = cost;
         this.rawMaterial = rawMaterial;
         this.averageDuration = averageDuration; //minutes
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
