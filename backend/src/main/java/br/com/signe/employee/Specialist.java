@@ -1,14 +1,33 @@
 package br.com.signe.employee;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalTime;
 import java.util.Set;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+@Getter
+@Entity
+@DiscriminatorValue("SPECIALIST")
 public class Specialist extends Employees {
+
+    @Column(nullable = false)
     private LocalTime start;
+
+    @Column(nullable = false)
     private LocalTime finish;
-    private Set<br.com.signe.employee.Specialization> specialization;
+
+    @Setter
+    @ElementCollection
+    @CollectionTable(name = "specialist_specialization", joinColumns = @JoinColumn(name = "specialist_id"))
+    @Column(name = "specialization")
+    @Enumerated(EnumType.STRING)
+    private Set<Specialization> specialization;
+
+    public Specialist() {}
 
     public Specialist(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, LocalTime start, LocalTime finish, Set<Specialization> specialization) {
         super(name, cpf, id, email, hasPhone, address, baseSalary);
@@ -17,20 +36,12 @@ public class Specialist extends Employees {
         this.specialization = specialization;
     }
 
-    public LocalTime getFinish() {
-        return finish;
+    public boolean isWithinWorkingHours(LocalTime startScheduling, LocalTime finishScheduling) {
+
+        return !startScheduling.isBefore(this.start)
+                && !finishScheduling.isAfter(this.finish);
     }
 
-    public LocalTime getStart() {
-        return start;
-    }
-
-    public Set<br.com.signe.employee.Specialization> getSpecialization() {
-        return specialization;
-    }
-    public void setSpecialization(Set<br.com.signe.employee.Specialization> specialization) {
-        this.specialization = specialization;
-    }
     @Override
     public void showDetails() {
         super.showDetails();

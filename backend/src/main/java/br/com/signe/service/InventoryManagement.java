@@ -1,37 +1,32 @@
 package br.com.signe.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryManagement {
-    private List<Product> products = new ArrayList<>();
+    private final ProductRepository productRepository;
 
-    public Product searchProductByName(String name) {
-        for (Product p : products) {
-            if (p.getName().equalsIgnoreCase(name)) {
-                return p;
-            }
-        }
-        return null;
+    public InventoryManagement(ProductRepository productRepository){
+        this.productRepository = productRepository;
     }
 
     public void addProduct(Product product) {
-        products.add(product);
+        productRepository.save(product);
     }
 
     public boolean productEntry(String productName, int quantity) {
-        Product randomProduct = searchProductByName(productName);
+        Product randomProduct = productRepository.searchProductByName(productName);
 
         if (randomProduct == null) {
             return false;
         } else {
             randomProduct.setInventoryQuantity(randomProduct.getInventoryQuantity() + quantity);
+            productRepository.update(randomProduct);
             return true;
         }
     }
 
     public boolean productExit(String productName, int quantity) {
-        Product randomProduct = searchProductByName(productName);
+        Product randomProduct = productRepository.searchProductByName(productName);
 
         if (randomProduct == null) {
             return false;
@@ -41,24 +36,24 @@ public class InventoryManagement {
         }
 
         randomProduct.setInventoryQuantity(randomProduct.getInventoryQuantity() - quantity);
+        productRepository.update(randomProduct);
         return true;
     }
 
-
     public boolean changeProductName(String currentlyName, String newName) {
-        Product randomProduct = searchProductByName(currentlyName);
+        Product randomProduct = productRepository.searchProductByName(currentlyName);
 
         if (randomProduct == null) {
             return false;
         } else {
             randomProduct.setName(newName);
+            productRepository.update(randomProduct);
             return true;
         }
     }
 
-
     public boolean checkAvailability(String productName, int quantity) {
-        Product randomProduct = searchProductByName(productName);
+        Product randomProduct = productRepository.searchProductByName(productName);
 
         if (randomProduct == null) {
             return false;
@@ -68,18 +63,10 @@ public class InventoryManagement {
     }
 
     public List<Product> showAllProducts(){
-        return products;
+        return productRepository.showAllProducts();
     }
 
-    public List<Product> lowInventoryProductsList(int limit){
-        List<Product> list = new ArrayList<>();
-
-        for (Product p : products) {
-            if (p.getInventoryQuantity() <= limit) {
-                list.add(p);
-            }
-        }
-
-        return list;
+    public List<Product> lowInventoryProductsList(int limit) {
+        return productRepository.lowInventoryProductsList(limit);
     }
 }
