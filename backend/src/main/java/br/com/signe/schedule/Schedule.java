@@ -1,29 +1,36 @@
 package br.com.signe.schedule;
 
 import br.com.signe.employee.Specialist;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static jdk.jfr.FlightRecorder.isAvailable;
-
+@Entity
+@Getter
+@Setter
 public class Schedule {
 
-    private br.com.signe.employee.Specialist specialist;
-    private List<br.com.signe.schedule.Scheduling> schedulings;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long scheduleId;
 
+    @ManyToOne
+    @JoinColumn(name = "specialist_id", nullable = false)
+    private Specialist specialist;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Scheduling> schedulings;
+
+    public Schedule() {
+        this.schedulings = new ArrayList<>();
+    }
     public Schedule(Specialist specialist) {
         this.specialist = specialist;
         this.schedulings = new ArrayList<>();
-    }
-
-    public Specialist getSpecialist() {
-        return specialist;
-    }
-
-    public List<br.com.signe.schedule.Scheduling> getSchedulings() {
-        return schedulings;
     }
 
     public void addScheduling(br.com.signe.schedule.Scheduling scheduling) {
@@ -34,7 +41,7 @@ public class Schedule {
         }
     }
 
-    private boolean isAvailable(LocalDateTime start, LocalDateTime finish) {
+    private boolean isAvailable(LocalTime start, LocalTime finish) {
         for (br.com.signe.schedule.Scheduling s : schedulings) {
             if (!(finish.isBefore(s.getStart()) || start.isAfter(s.getFinish()))) {
                 return false;

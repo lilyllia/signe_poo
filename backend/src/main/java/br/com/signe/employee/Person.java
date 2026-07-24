@@ -1,13 +1,36 @@
 package br.com.signe.employee;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class  Person {
+@Setter
+@Getter
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "person_type", discriminatorType = DiscriminatorType.STRING)
+public abstract class Person {
 
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String cpf;
+
+    @Id
+    @Column(unique = true, nullable = false)
     private String id;
+
+    @Column(nullable = false)
     private String email;
+
+    @Column
     private String hasPhone;
+
+    @Column
     private String address;
+
+    public Person() {}
 
     public Person(String name, String cpf, String id, String email, String hasPhone, String address) {
         this.name = name;
@@ -15,54 +38,6 @@ public abstract class  Person {
         this.id = id;
         this.email = email;
         this.hasPhone = hasPhone;
-        this.address = address;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail(){
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getHasPhone(){
-        return hasPhone;
-    }
-
-    public void setHasPhone(String hasPhone){
-        this.hasPhone = hasPhone;
-    }
-
-    public String getAddress(){
-        return address;
-    }
-
-    public void setAddress(String address){
         this.address = address;
     }
 

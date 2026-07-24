@@ -1,27 +1,30 @@
 package br.com.signe.employee;
 
-public class Employees extends Person {
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-    private double baseSalary;
-    private br.com.signe.employee.EmployeeStatus status;
+@Setter
+@Getter
+@Entity
+    @DiscriminatorValue("EMPLOYEE")
+    public class Employees extends Person {
+
+        @Column(nullable = false)
+        private double baseSalary;
+
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false)
+        private EmployeeStatus status;
+
+        public Employees() {}
 
     public Employees(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary) {
         super(name, cpf, id, email, hasPhone, address);
         this.baseSalary = baseSalary;
         this.status = br.com.signe.employee.EmployeeStatus.ACTIVE;
     }
-    public double getBaseSalary(){
-        return baseSalary;
-    }
-    public void setBaseSalary(double baseSalary){
-        this.baseSalary = baseSalary;
-    }
-    public br.com.signe.employee.EmployeeStatus getStatus(){
-        return status;
-    }
-    public void setStatus(br.com.signe.employee.EmployeeStatus status){
-        this.status = status;
-    }
+
     @Override
     public void showDetails() {
         super.showDetails();
