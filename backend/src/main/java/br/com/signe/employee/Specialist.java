@@ -8,7 +8,13 @@ import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue("SPECIALIST")
-public class Specialist extends Employees {
+public class Specialist extends Employees implements CalculateSalary {
+
+    @Column(nullable = false)
+    private double commissionPercentage;
+
+    @Column(nullable = false)
+    private double productivity;
 
     @Column(nullable = false)
     private LocalTime start;
@@ -24,8 +30,10 @@ public class Specialist extends Employees {
 
     public Specialist() {}
 
-    public Specialist(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, EmployeeStatus status, LocalTime start, LocalTime finish, Set<Specialization> specialization) {
+    public Specialist(String name, String cpf, String id, String email, String hasPhone, String address, double baseSalary, EmployeeStatus status, double commissionPercentage, double productivity, LocalTime start, LocalTime finish, Set<Specialization> specialization) {
         super(name, cpf, id, email, hasPhone, address, baseSalary, status);
+        this.commissionPercentage = commissionPercentage;
+        this.productivity = productivity;
         this.start = start;
         this.finish = finish;
         this.specialization = specialization;
@@ -60,7 +68,6 @@ public class Specialist extends Employees {
                 && !finishScheduling.isAfter(this.finish);
     }
 
-
     @Override
     public void showDetails() {
         super.showDetails();
@@ -70,5 +77,11 @@ public class Specialist extends Employees {
                 .map(Specialization::getDescription)
                 .collect(Collectors.joining(", "));
         System.out.println("Especialização: " + descricoes);
+    }
+
+    @Override
+    public double calculateSalary() {
+        double commission = productivity * commissionPercentage;
+        return getBaseSalary() + commission;
     }
 }
