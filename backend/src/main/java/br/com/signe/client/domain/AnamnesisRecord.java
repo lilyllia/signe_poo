@@ -57,6 +57,10 @@ public class AnamnesisRecord {
         this.progressNotes = notes;
     }
 
+    public AnamnesisRecord(UUID clientId){
+        this.clientId = clientId;
+    }
+
     public void addAllergy(String allergy) {
         if (allergy != null && !allergy.isBlank() && !this.allergies.contains(allergy)) {
             this.allergies.add(allergy);

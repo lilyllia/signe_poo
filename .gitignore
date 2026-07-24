@@ -10,4 +10,4 @@
 Thumbs.db
 
 # ===== Variáveis de ambiente / segredos =====
-**/.env
+**/.envbackend/data/

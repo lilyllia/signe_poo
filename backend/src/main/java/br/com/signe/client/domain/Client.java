@@ -1,6 +1,7 @@
 package br.com.signe.client.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,16 +19,19 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @NotBlank(message = "Nome é obrigatório.")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotBlank(message = "Sobrenome é obrigatório")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
     // email TEM que ser único, pois é um dado sensível e de identificação do cliente
-    @Column(unique = true)
+    @Column(unique = true, nullable = true)
     private String email;
 
+    @NotBlank(message = "Telefone é obrigatório")
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 

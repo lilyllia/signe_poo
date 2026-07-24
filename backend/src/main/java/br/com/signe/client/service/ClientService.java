@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,29 +31,58 @@ public class ClientService {
     // =================================
     @Transactional
     // IMPORTANTE: garante que, se houver algum erro no meio do processo, o banco de dados não vai salvar nada (rollback)
-    public Client registerNewClient(String firstName, String lastName, String email, String phone, LocalDate dob) {
+    public Client registerNewClient(String firstName, String lastName, String email, String phoneNumber, LocalDate dob) {
 
-        // 1.1 verifica a regra de negócio do email
-        Optional<Client> existingClient = clientRepository.findByEmail(email);
-        if (existingClient.isPresent()) {
-            throw new IllegalArgumentException("Esse email já está cadastrado! Por favor, use outro email.");
+        // 1.0 verifica campos obrigatórios
+        if (firstName == null || firstName.trim().isEmpty() ||
+                lastName == null || lastName.trim().isEmpty() ||
+                phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome, sobrenome e telefone são obrigatórios para o cadastro inicial.");
         }
 
         // 1.2 cria o objeto do cliente (ainda não salvo no banco)
-        Client newClient = new Client(firstName, lastName, email, phone, dob);
+        Client newClient = new Client(firstName, lastName, email, phoneNumber, dob);
 
         // 1.3 salva no banco
         return clientRepository.save(newClient);
+    }
+    // criar ficha de anamnese vazia pro novo cliente
+    @Transactional
+    public AnamnesisRecord createAnamnesisRecord(UUID clientId) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
+
+        if (!client.isActive()) {
+            throw new IllegalArgumentException("Não é possível criar ficha para cliente inativo.");
+        }
+
+        Optional<AnamnesisRecord> existingRecord = anamnesisRecordRepository.findByClientId(clientId);
+        if (existingRecord.isPresent()) {
+            throw new IllegalArgumentException("Este cliente já possui uma ficha de anamnese.");
+        }
+
+        AnamnesisRecord newRecord = new AnamnesisRecord(clientId);
+        return anamnesisRecordRepository.save(newRecord);
     }
 
     // =================================
     // READ - 2 buscar dados do cliente
     // =================================
+    public List<Client> getAllActiveClients() {
+        return clientRepository.findAll().stream()
+                .filter(Client::isActive)
+                .toList();
+    }
+
     public ClientProfileDTO getFullClientProfile(UUID clientId) {
 
         // 2.1 busca no repositorio de clientes o cliente pelo id. se não encontrar, lança uma exceção.
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
+
+        if (!client.isActive()) {
+            throw new IllegalArgumentException("Esse cliente foi desativado do sistema.");
+        }
 
         // 2.2 agora vai no repositório de fichas buscar a do cliente específico
         AnamnesisRecord anamnesisRecord = anamnesisRecordRepository.findByClientId(clientId).orElse(null);
