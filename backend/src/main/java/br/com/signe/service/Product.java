@@ -1,11 +1,31 @@
 package br.com.signe.service;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name="product")
 public class Product {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private  Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private double price;
+
+    @Column(name = "unit_measure")
     private String unitMeasure;
+
     private String brand;
+
+    @Column(name = "inventory_quantity", nullable = false)
     private int inventoryQuantity;
+
+    protected Product(){
+    }
 
     public Product(String name, double price, String unitMeasure, String brand, int inventoryQuantity) {
         this.name = name;
@@ -13,6 +33,10 @@ public class Product {
         this.unitMeasure = unitMeasure;
         this.brand = brand;
         this.inventoryQuantity = inventoryQuantity;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
