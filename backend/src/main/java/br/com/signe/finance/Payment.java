@@ -1,17 +1,24 @@
-package finance;
+package br.com.signe.finance;
 
 import br.com.signe.schedule.Scheduling;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
+import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
-import finance.PaymentMethod;
-import finance.PaymentStatus;
+import java.util.UUID;
 
 @Entity
+@Table(name = "payments")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Payment {
 
     @Id
-    @Column(unique = true, nullable = false)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @UuidGenerator
+    @Column(name = "id", updatable = false, nullable = false, unique = true)
+    private UUID id;
 
     @OneToOne(optional = false)
     private Scheduling scheduling;
@@ -30,11 +37,12 @@ public class Payment {
     @Column(nullable = false)
     private LocalDateTime paymentDate;
 
-    public String getId() {
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

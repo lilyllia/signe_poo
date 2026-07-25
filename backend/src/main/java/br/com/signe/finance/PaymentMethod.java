@@ -1,4 +1,4 @@
-package finance;
+package br.com.signe.finance;
 
 public enum PaymentMethod {
 
