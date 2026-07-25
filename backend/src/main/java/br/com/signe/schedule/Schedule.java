@@ -2,16 +2,12 @@ package br.com.signe.schedule;
 
 import br.com.signe.employee.Specialist;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
-@Setter
 public class Schedule {
 
     @Id
@@ -31,6 +27,30 @@ public class Schedule {
     public Schedule(Specialist specialist) {
         this.specialist = specialist;
         this.schedulings = new ArrayList<>();
+    }
+
+    public Long getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(Long scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    public Specialist getSpecialist() {
+        return specialist;
+    }
+
+    public void setSpecialist(Specialist specialist) {
+        this.specialist = specialist;
+    }
+
+    public List<Scheduling> getSchedulings() {
+        return schedulings;
+    }
+
+    public void setSchedulings(List<Scheduling> schedulings) {
+        this.schedulings = schedulings;
     }
 
     public void addScheduling(br.com.signe.schedule.Scheduling scheduling) {

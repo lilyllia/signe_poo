@@ -4,15 +4,12 @@ import br.com.signe.client.domain.Client;
 import br.com.signe.service.Procedure;
 import br.com.signe.employee.Specialist;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.time.LocalTime;
 import java.util.Objects;
 
 @Entity
-@Getter
-@Setter
 public class Scheduling {
 
     @Id
@@ -59,6 +56,63 @@ public class Scheduling {
                     "O horário final deve ser posterior ao horário inicial.");
         }
         this.status = br.com.signe.schedule.StatusScheduling.SCHEDULED;
+    }
+
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Specialist getSpecialist() {
+        return specialist;
+    }
+
+    public void setSpecialist(Specialist specialist) {
+        this.specialist = specialist;
+    }
+
+    public Procedure getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(Procedure procedure) {
+        this.procedure = procedure;
+    }
+
+    public Schedule getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public LocalTime getStart() {
+        return start;
+    }
+
+    public void setStart(LocalTime start) {
+        this.start = start;
+    }
+
+    public LocalTime getFinish() {
+        return finish;
+    }
+
+    public void setFinish(LocalTime finish) {
+        this.finish = finish;
+    }
+
+    public StatusScheduling getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusScheduling status) {
+        this.status = status;
     }
 
     public void confirmScheduling(){
