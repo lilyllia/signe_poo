@@ -1,6 +1,6 @@
 package br.com.signe.schedule;
 
-import br.com.signe.employee.Specialist;
+import br.com.signe.employee.domain.Specialist;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

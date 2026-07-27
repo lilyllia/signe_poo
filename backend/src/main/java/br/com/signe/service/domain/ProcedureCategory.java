@@ -1,4 +1,4 @@
-package br.com.signe.service;
+package br.com.signe.service.domain;
 
 public enum ProcedureCategory {
     BLOWOUT,

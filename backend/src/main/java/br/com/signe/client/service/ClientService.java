@@ -2,7 +2,9 @@ package br.com.signe.client.service;
 
 import br.com.signe.client.domain.AnamnesisRecord;
 import br.com.signe.client.domain.Client;
+import br.com.signe.client.domain.HairProfile;
 import br.com.signe.client.dto.ClientProfileDTO;
+import br.com.signe.client.dto.UpdateAnamnesisRequest;
 import br.com.signe.client.repository.AnamnesisRecordRepository;
 import br.com.signe.client.repository.ClientRepository;
 import org.springframework.stereotype.Service;
@@ -91,7 +93,8 @@ public class ClientService {
 
         return new ClientProfileDTO(
                 client.getId(),
-                client.getFullName(),
+                client.getFirstName(),
+                client.getLastName(),
                 client.getEmail(),
                 client.getPhoneNumber(),
                 client.getDateOfBirth(),
@@ -100,25 +103,27 @@ public class ClientService {
     }
 
     // =================================
-    // UPDATE - 3 atualizar dados do cliente
+    // UPDATE - 3 atualizar dados básicos do cliente
     // =================================
+
+    //atualizar perfil
     @Transactional
-    public Client updateClientContactInfo(UUID clientId, String newEmail, String newPhone) {
+    public Client updateClientProfile(UUID clientId, String firstName, String lastName, String newEmail, String newPhone, LocalDate dob) {
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
 
-        // If they are changing the email, make sure the new one isn't taken by someone else
-        if (!client.getEmail().equals(newEmail)) {
+        if (newEmail != null && !newEmail.trim().isEmpty() && !newEmail.equals(client.getEmail())) {
             Optional<Client> existingEmail = clientRepository.findByEmail(newEmail);
             if (existingEmail.isPresent()) {
                 throw new IllegalArgumentException("Esse email já está cadastrado! Por favor, use outro email.");
             }
         }
 
-        client.updateContactInfo(newEmail, newPhone);
+        client.updateProfile(firstName, lastName, newEmail, newPhone, dob);
         return clientRepository.save(client);
     }
 
+    //adicionar alergia
     @Transactional
     public AnamnesisRecord addClientAllergy(UUID clientId, String allergy) {
         Client client = clientRepository.findById(clientId)
@@ -136,8 +141,37 @@ public class ClientService {
         return anamnesisRecordRepository.save(record);
     }
 
+    //atualizar ficha
+    @Transactional
+    public AnamnesisRecord updateAnamnesisRecord(UUID clientId, UpdateAnamnesisRequest req) {
+        Client client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado!"));
+
+        if (!client.isActive()) {
+            throw new IllegalArgumentException("Não é possível atualizar a anamnese de um cliente removido.");
+        }
+
+        AnamnesisRecord record = anamnesisRecordRepository.findByClientId(clientId)
+                .orElseThrow(() -> new IllegalArgumentException("Ficha de anamnese não encontrada. Crie uma ficha em branco primeiro."));
+
+        // Cria um novo objeto Embutido (HairProfile) com os dados recebidos
+        HairProfile newHairProfile = new HairProfile(
+                req.hairShape(),
+                req.hairPorosity(),
+                req.hairThickness(),
+                req.hairLength(),
+                req.chemicallyTreated(),
+                req.damaged()
+        );
+
+        // Usa o novo método que criamos na entidade para atualizar tudo!
+        record.updateDetails(req.skinType(), newHairProfile, req.progressNotes());
+
+        return anamnesisRecordRepository.save(record);
+    }
+
     // ==========================================
-    // 4. EXCLUIR CLIENTE (SOFT DELETE)
+    //DELETE - 4 excluir cliente (soft delete)
     // ==========================================
     @Transactional
     public void deleteClient(UUID clientId) {

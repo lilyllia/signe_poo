@@ -95,7 +95,7 @@ class ClientTests {
 
 		// 4. Assert: Check if the Service successfully found and combined the data
 		assertNotNull(fullProfile, "A DTO do perfil completo não deveria ser nula.");
-		assertEquals("Leila Cabeleleila", fullProfile.fullName(), "Dados do cliente não batem com o esperado.");
+		assertEquals("Leila", fullProfile.firstName(), "Dados do cliente não batem com o esperado.");
 
 		// The ultimate test: Did it attach the Anamnesis Record?
 		assertNotNull(fullProfile.anamnesisRecord(), "A ficha de anamnese deveria estar presente no DTO.");

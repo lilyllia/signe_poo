@@ -1,16 +1,16 @@
-package br.com.signe.employee;
+package br.com.signe.employee.domain;
 
 public enum Specialization {
 
     HAIRDRESSER("Cabeleireiro(a)"),
 
-    MANICURE("Manicure"),
+    MANICURE("Manicure/Pedicure"),
 
     PODIATRIST("Podóloga"),
 
     COLORING("Colorista"),
 
-    TERRAPIN_CAPILAR("Terapia-Capilar");
+    CAPILLARY_THERAPY("Terapia-Capilar");
 
     private final String description;
 

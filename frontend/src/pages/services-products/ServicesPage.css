@@ -1,0 +1,226 @@
+/* STREAMING_CHUNK: Page and Tab Styles */
+.services-page-container {
+max-width: 1000px;
+margin: 0 auto;
+padding: 20px;
+animation: fadeIn 0.3s ease-in-out;
+}
+
+.tabs-header {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+border-bottom: 2px solid #e2d8d0;
+padding-bottom: 10px;
+}
+
+.tab-button {
+background: none;
+border: none;
+font-size: 1.1em;
+font-weight: 600;
+color: #777;
+padding: 10px 20px;
+cursor: pointer;
+border-radius: 8px 8px 0 0;
+transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+background-color: #f5f0eb;
+color: #5c2d2d;
+}
+
+.tab-button.active {
+color: #5c2d2d;
+background-color: #fff;
+border-bottom: 4px solid #5c2d2d;
+margin-bottom: -14px; /* Pull it down over the border */
+}
+
+/* STREAMING_CHUNK: Forms Styles */
+.creation-card {
+background: white;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+border: 1px solid #e2d8d0;
+margin-bottom: 30px;
+}
+
+.creation-card h3 {
+margin-top: 0;
+color: #5c2d2d;
+margin-bottom: 15px;
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 15px;
+margin-bottom: 15px;
+}
+
+.form-group {
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+
+.form-group label {
+font-size: 0.85em;
+font-weight: 600;
+color: #555;
+}
+
+.form-group input,
+.form-group select {
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 6px;
+font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+outline: none;
+border-color: #5c2d2d;
+box-shadow: 0 0 0 2px rgba(92, 45, 45, 0.1);
+}
+
+.submit-btn {
+background-color: #5c2d2d;
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 6px;
+font-weight: bold;
+cursor: pointer;
+transition: 0.2s;
+width: 100%;
+}
+
+.submit-btn:hover:not(:disabled) {
+background-color: #4a2424;
+}
+
+.submit-btn:disabled {
+background-color: #a89a9a;
+cursor: not-allowed;
+}
+
+/* STREAMING_CHUNK: List and Card Styles */
+.items-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 20px;
+}
+
+.item-card {
+background: white;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+border: 1px solid #eee;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+}
+
+.item-header {
+border-bottom: 1px solid #eee;
+padding-bottom: 10px;
+margin-bottom: 10px;
+}
+
+.item-header h4 {
+margin: 0 0 5px 0;
+color: #333;
+font-size: 1.1em;
+}
+
+.badge {
+display: inline-block;
+padding: 4px 8px;
+border-radius: 4px;
+font-size: 0.75em;
+font-weight: bold;
+background-color: #f0f0f0;
+color: #555;
+}
+
+.item-body p {
+margin: 5px 0;
+font-size: 0.9em;
+color: #666;
+}
+
+.price-tag {
+font-size: 1.2em;
+font-weight: bold;
+color: #2e7d32; /* Green for money */
+}
+
+/* STREAMING_CHUNK: Stock Management Buttons */
+.stock-controls {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-top: 15px;
+padding-top: 15px;
+border-top: 1px dashed #eee;
+}
+
+.stock-btn {
+background-color: #f5f0eb;
+border: 1px solid #e2d8d0;
+color: #5c2d2d;
+width: 30px;
+height: 30px;
+border-radius: 50%;
+font-size: 1.2em;
+font-weight: bold;
+display: flex;
+justify-content: center;
+align-items: center;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.stock-btn:hover {
+background-color: #e2d8d0;
+}
+
+.stock-btn.remove:hover {
+background-color: #ffebee;
+color: #c62828;
+border-color: #ffcdd2;
+}
+
+.stock-btn.add:hover {
+background-color: #e8f5e9;
+color: #2e7d32;
+border-color: #c8e6c9;
+}
+
+.stock-amount {
+font-weight: bold;
+font-size: 1.1em;
+min-width: 30px;
+text-align: center;
+}
+
+.low-stock {
+color: #c62828;
+}
+
+.delete-btn {
+background: none;
+border: none;
+color: #c62828;
+cursor: pointer;
+font-size: 0.8em;
+text-decoration: underline;
+margin-top: 10px;
+align-self: flex-end;
+}

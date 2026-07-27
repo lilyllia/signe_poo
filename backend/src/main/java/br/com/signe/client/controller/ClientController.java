@@ -2,10 +2,7 @@ package br.com.signe.client.controller;
 
 import br.com.signe.client.domain.AnamnesisRecord;
 import br.com.signe.client.domain.Client;
-import br.com.signe.client.dto.AllergyRequest;
-import br.com.signe.client.dto.ClientProfileDTO;
-import br.com.signe.client.dto.RegisterClientRequest;
-import br.com.signe.client.dto.UpdateContactRequest;
+import br.com.signe.client.dto.*;
 import br.com.signe.client.service.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,15 +69,22 @@ public class ClientController {
     }
 
     // ==========================================
-    // 3. ATUALIZAR DADOS DE CONTATO (PUT)
+    // 3. ATUALIZAR DADOS DO CLIENTE (PUT)
     // URL: /api/clients/{clientId}/contact
     // ==========================================
-    @PutMapping("/{clientId}/contact")
-    public ResponseEntity<Client> updateContactInfo(
+    @PutMapping("/{clientId}/profile")
+    public ResponseEntity<Client> updateClientProfile(
             @PathVariable UUID clientId,
-            @RequestBody UpdateContactRequest request) {
+            @RequestBody UpdateProfileRequest request) {
 
-        Client updatedClient = clientService.updateClientContactInfo(clientId, request.email(), request.phone());
+        Client updatedClient = clientService.updateClientProfile(
+                clientId,
+                request.firstName(),
+                request.lastName(),
+                request.email(),
+                request.phoneNumber(),
+                request.dateOfBirth()
+        );
         return ResponseEntity.ok(updatedClient);
     }
 
@@ -95,6 +99,25 @@ public class ClientController {
 
         AnamnesisRecord updatedRecord = clientService.addClientAllergy(clientId, request.allergy());
         return ResponseEntity.ok(updatedRecord);
+    }
+
+
+    // ==========================================
+    // 4. ATUALIZAR A FICHA DE ANAMNESE (PUT)
+    // URL: /api/clients/{clientId}/anamnesis
+    // ==========================================
+    @PutMapping("/{clientId}/anamnesis")
+    public ResponseEntity<AnamnesisRecord> updateAnamnesis(
+            @PathVariable UUID clientId,
+            @RequestBody UpdateAnamnesisRequest request) {
+
+        AnamnesisRecord updatedRecord = clientService.updateAnamnesisRecord(clientId, request);
+        return ResponseEntity.ok(updatedRecord);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleBadRequests(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
     // ==========================================

@@ -67,11 +67,10 @@ public class AnamnesisRecord {
         }
     }
 
-    public void updateSkinType(SkinType skinType) {
-        if(skinType != null && !skinType.equals(this.skinType)) {
-            this.skinType = skinType;
-        }
+    public void updateDetails(SkinType skinType, HairProfile hairProfile, String progressNotes) {
         this.skinType = skinType;
+        this.hairProfile = hairProfile;
+        this.progressNotes = progressNotes;
     }
 
     public void deactivate() {

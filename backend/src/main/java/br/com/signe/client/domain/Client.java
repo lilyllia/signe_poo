@@ -61,16 +61,19 @@ public class Client {
         this.dateOfBirth = dateOfBirth;
     }
 
-    // por enquanto só vou incluir setters pra informações de contato, pois são as únicas que podem ser alteradas (para os casos de erro no cadastro, vou desenvolver algo depois
-    public void updateContactInfo(String email, String phoneNumber) {
-        if(email != null && !email.isEmpty()) {
-            this.email = email;
+    //setters pras informacoes de contato
+    public void updateProfile(String firstName, String lastName, String email, String phoneNumber, LocalDate dateOfBirth) {
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            this.firstName = firstName;
         }
-        if(phoneNumber != null && !phoneNumber.isEmpty()) {
-            this.phoneNumber = phoneNumber;
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            this.lastName = lastName;
         }
+
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.dateOfBirth = dateOfBirth;
     }
-    
     public String getFullName() {
         return this.firstName + " " + this.lastName;
     }

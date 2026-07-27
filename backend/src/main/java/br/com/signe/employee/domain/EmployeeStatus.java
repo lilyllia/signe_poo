@@ -1,8 +1,9 @@
-package br.com.signe.employee;
+package br.com.signe.employee.domain;
 
 public enum EmployeeStatus {
     ACTIVE,
     VACATION,
     LICENSE,
-    FIRED;
+    FIRED,
+    INACTIVE
 }
