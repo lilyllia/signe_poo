@@ -1,13 +1,16 @@
 package br.com.signe.schedule;
 
-import schedule.StatusScheduling;
+import br.com.signe.schedule.StatusScheduling;
 import br.com.signe.client.domain.Client;
 import br.com.signe.service.domain.Procedure;
 import br.com.signe.employee.domain.Specialist;
 import jakarta.persistence.*;
+import org.springframework.data.repository.query.Param;
 
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -32,6 +35,9 @@ public class Scheduling {
     @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @Column(nullable = false)
     private LocalTime start;
@@ -59,6 +65,17 @@ public class Scheduling {
         this.status = StatusScheduling.SCHEDULED;
     }
 
+    public Long getSchedulingId() {
+        return schedulingId;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
     public Client getClient() {
         return client;
@@ -146,6 +163,7 @@ public class Scheduling {
 
         status = StatusScheduling.MISSED;
     }
+
     @Override
     public String toString() {
         return "Scheduling{" +
