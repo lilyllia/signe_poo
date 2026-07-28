@@ -8,7 +8,8 @@ import java.util.UUID;
 // o tipo record já vem com constrututor, getter e funções de equals() e hashcode()
 public record ClientProfileDTO(
         UUID clientId,
-        String fullName,
+        String firstName,
+        String lastName,
         String email,
         String phoneNumber,
         LocalDate dateOfBirth,

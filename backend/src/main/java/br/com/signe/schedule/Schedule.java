@@ -1,6 +1,6 @@
 package br.com.signe.schedule;
 
-import br.com.signe.employee.Specialist;
+import br.com.signe.employee.domain.Specialist;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -55,6 +55,7 @@ public class Schedule {
 
     public void addScheduling(br.com.signe.schedule.Scheduling scheduling) {
         if (isAvailable(scheduling.getStart(), scheduling.getFinish())) {
+            scheduling.setSchedule(this);
             schedulings.add(scheduling);
         } else {
             throw new IllegalArgumentException("O horário solicitado não está disponível.");
@@ -63,7 +64,7 @@ public class Schedule {
 
     private boolean isAvailable(LocalTime start, LocalTime finish) {
         for (br.com.signe.schedule.Scheduling s : schedulings) {
-            if (!(finish.isBefore(s.getStart()) || start.isAfter(s.getFinish()))) {
+            if (finish.isAfter(s.getStart()) && start.isBefore(s.getFinish())) {
                 return false;
             }
         }

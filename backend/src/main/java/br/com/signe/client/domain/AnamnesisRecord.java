@@ -57,17 +57,20 @@ public class AnamnesisRecord {
         this.progressNotes = notes;
     }
 
+    public AnamnesisRecord(UUID clientId){
+        this.clientId = clientId;
+    }
+
     public void addAllergy(String allergy) {
         if (allergy != null && !allergy.isBlank() && !this.allergies.contains(allergy)) {
             this.allergies.add(allergy);
         }
     }
 
-    public void updateSkinType(SkinType skinType) {
-        if(skinType != null && !skinType.equals(this.skinType)) {
-            this.skinType = skinType;
-        }
+    public void updateDetails(SkinType skinType, HairProfile hairProfile, String progressNotes) {
         this.skinType = skinType;
+        this.hairProfile = hairProfile;
+        this.progressNotes = progressNotes;
     }
 
     public void deactivate() {

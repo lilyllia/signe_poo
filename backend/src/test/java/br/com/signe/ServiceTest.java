@@ -1,9 +1,8 @@
 package br.com.signe;
 
-import br.com.signe.service.InventoryManagement;
-import br.com.signe.service.Procedure;
-import br.com.signe.service.ProcedureCategory;
-import br.com.signe.service.Product;
+import br.com.signe.service.domain.Procedure;
+import br.com.signe.service.domain.ProcedureCategory;
+import br.com.signe.service.domain.Product;
 
 public class ServiceTest {
     Procedure simpleBlowOut = new Procedure("Escova simples", ProcedureCategory.BLOWOUT, 50.00,
@@ -26,7 +25,7 @@ public class ServiceTest {
 
     Product brazilianBlowoutKit = new Product("Kit Progressiva Alisante (2 produtos)", 94.90, "350ml", "Borabella", 10);
 
-    InventoryManagement inventoryManagement = new InventoryManagement();
+    //ProductService inventoryManagement = new ProductService();
     //inventoryManagement.addProduct(wellaShampoo);
     //inventoryManagement.addProduct(brazilianBlowoutKit);
 

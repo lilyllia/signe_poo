@@ -1,12 +1,16 @@
 package br.com.signe.schedule;
 
+import br.com.signe.schedule.StatusScheduling;
 import br.com.signe.client.domain.Client;
-import br.com.signe.service.Procedure;
-import br.com.signe.employee.Specialist;
+import br.com.signe.service.domain.Procedure;
+import br.com.signe.employee.domain.Specialist;
 import jakarta.persistence.*;
+import org.springframework.data.repository.query.Param;
 
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -33,6 +37,9 @@ public class Scheduling {
     private Schedule schedule;
 
     @Column(nullable = false)
+    private LocalDate date;
+
+    @Column(nullable = false)
     private LocalTime start;
 
     @Column(nullable = false)
@@ -55,9 +62,20 @@ public class Scheduling {
             throw new IllegalArgumentException(
                     "O horário final deve ser posterior ao horário inicial.");
         }
-        this.status = br.com.signe.schedule.StatusScheduling.SCHEDULED;
+        this.status = StatusScheduling.SCHEDULED;
     }
 
+    public Long getSchedulingId() {
+        return schedulingId;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
     public Client getClient() {
         return client;
@@ -116,35 +134,36 @@ public class Scheduling {
     }
 
     public void confirmScheduling(){
-        if(status != br.com.signe.schedule.StatusScheduling.SCHEDULED){
+        if(status != StatusScheduling.SCHEDULED){
             throw new IllegalStateException("Só é possivel confirmar horários AGENDADOS.");
         }
-        status = br.com.signe.schedule.StatusScheduling.CONFIRMED;
+        status = StatusScheduling.CONFIRMED;
     }
 
     public void cancelScheduling(){
-        if(status != br.com.signe.schedule.StatusScheduling.SCHEDULED && status != br.com.signe.schedule.StatusScheduling.CONFIRMED){
+        if(status != StatusScheduling.SCHEDULED && status != StatusScheduling.CONFIRMED){
             throw new IllegalStateException("Só é possivel cancelar horários AGENDADOS ou CONFIRMADOS.");
         }
-        status = br.com.signe.schedule.StatusScheduling.CANCELLED;
+        status = StatusScheduling.CANCELLED;
     }
 
     public void completedService(){
-        if(status != br.com.signe.schedule.StatusScheduling.CONFIRMED){
+        if(status != StatusScheduling.CONFIRMED){
             throw new IllegalStateException("Só é possivel completar serviços de horários CONFIRMADOS.");
         }
-        status = br.com.signe.schedule.StatusScheduling.COMPLETED;
+        status = StatusScheduling.COMPLETED;
     }
 
     public void missScheduling(){
 
-        if(status != br.com.signe.schedule.StatusScheduling.CONFIRMED){
+        if(status != StatusScheduling.CONFIRMED){
             throw new IllegalStateException(
                     "Somente horários confirmados podem ser marcados como falta.");
         }
 
-        status = br.com.signe.schedule.StatusScheduling.MISSED;
+        status = StatusScheduling.MISSED;
     }
+
     @Override
     public String toString() {
         return "Scheduling{" +
