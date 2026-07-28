@@ -31,5 +31,6 @@ build/
 *.class
 *.jar
 *.war
+backend/data
 
 
