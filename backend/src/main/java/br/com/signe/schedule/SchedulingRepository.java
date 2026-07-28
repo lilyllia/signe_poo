@@ -12,11 +12,10 @@ import java.util.List;
 public interface SchedulingRepository extends JpaRepository<Scheduling, Long> {
 
     @Query("SELECT s FROM Scheduling s WHERE s.specialist.id = :specialistId " +
-            "AND s.status = :status " +
-            "AND s.date BETWEEN :start AND :end")
-    List<Scheduling> findBySpecialistAndStatusAndPeriod(
-            @Param("specialistId") String specialistId,
-            @Param("status") StatusScheduling status,
-            @Param("start") LocalDate start,
-            @Param("end") LocalDate end);
+            "AND s.status = br.com.signe.schedule.StatusScheduling.COMPLETED " +
+            "AND s.schedule.date BETWEEN :start AND :end")
+    List<Scheduling> findCompletedBySpecialistAndPeriod(
+            @Param("specialistId") java.util.UUID specialistId,
+            @Param("start") java.time.LocalDate start,
+            @Param("end") java.time.LocalDate end);
 }
