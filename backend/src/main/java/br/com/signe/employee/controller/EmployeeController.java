@@ -77,14 +77,12 @@ public class EmployeeController {
 
     @PutMapping("/admin/{id}/contract")
     public ResponseEntity<Administrator> updateAdminContract(@PathVariable UUID id, @RequestBody UpdateAdminContractRequest request) {
-        // Later: Add @PreAuthorize("hasRole('ADMIN')") here!
         Administrator updated = employeeService.updateAdminContract(id, request.baseSalary());
         return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/specialist/{id}/contract")
     public ResponseEntity<Specialist> updateSpecialistContract(@PathVariable UUID id, @RequestBody UpdateSpecialistContractRequest request) {
-        // Later: Add @PreAuthorize("hasRole('ADMIN')") here!
         Specialist updated = employeeService.updateSpecialistContract(
                 id, request.baseSalary(), request.commissionPercentage(),
                 request.start(), request.finish(), request.specializations()

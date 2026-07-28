@@ -15,6 +15,7 @@ public class Payment {
     @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToOne(optional = false)
     @JoinColumn(name = "scheduling_id", nullable = false, unique = true)
     private Scheduling scheduling;

@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 
-    Optional<Payment> findByScheduling_SchedulingId(Long schedulingId);
+    Optional<Payment> findBySchedulingId(UUID schedulingId);
 
     List<Payment> findByStatus(PaymentStatus status);
 

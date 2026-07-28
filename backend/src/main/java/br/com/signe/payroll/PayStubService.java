@@ -1,7 +1,7 @@
 package br.com.signe.payroll;
 
 import br.com.signe.employee.domain.Specialist;
-import br.com.signe.employee.domain.SpecialistRepository;
+import br.com.signe.employee.repository.SpecialistRepository;
 import br.com.signe.schedule.Scheduling;
 import br.com.signe.schedule.SchedulingRepository;
 import org.springframework.stereotype.Service;

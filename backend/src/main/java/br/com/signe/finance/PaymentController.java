@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
@@ -21,7 +22,7 @@ public class PaymentController {
 
     @PostMapping
     public ResponseEntity<?> create(
-            @RequestParam Long schedulingId,
+            @RequestParam UUID schedulingId,
             @RequestParam PaymentMethod paymentMethod) {
         try {
             Payment payment = paymentService.createPaymentForScheduling(schedulingId, paymentMethod);
@@ -49,7 +50,7 @@ public class PaymentController {
     }
 
     @GetMapping("/scheduling/{schedulingId}")
-    public ResponseEntity<Payment> findByScheduling(@PathVariable Long schedulingId) {
+    public ResponseEntity<Payment> findByScheduling(@PathVariable UUID schedulingId) {
         return paymentService.findByScheduling(schedulingId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

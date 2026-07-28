@@ -26,12 +26,12 @@ public class PaymentService {
     // CREATE - gera o pagamento a partir de um agendamento existente
 
     @Transactional
-    public Payment createPaymentForScheduling(Long schedulingId, PaymentMethod paymentMethod) {
+    public Payment createPaymentForScheduling(UUID schedulingId, PaymentMethod paymentMethod) {
 
         Scheduling scheduling = schedulingRepository.findById(schedulingId)
                 .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado."));
 
-        Optional<Payment> existingPayment = paymentRepository.findByScheduling_SchedulingId(schedulingId);
+        Optional<Payment> existingPayment = paymentRepository.findBySchedulingId(schedulingId);
         if (existingPayment.isPresent()) {
             throw new IllegalStateException("Já existe um pagamento gerado para este agendamento.");
         }
@@ -74,8 +74,8 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("Pagamento não encontrado."));
     }
 
-    public Optional<Payment> findByScheduling(Long schedulingId) {
-        return paymentRepository.findByScheduling_SchedulingId(schedulingId);
+    public Optional<Payment> findByScheduling(UUID schedulingId) {
+        return paymentRepository.findBySchedulingId(schedulingId);
     }
 
     public List<Payment> listByStatus(PaymentStatus status) {

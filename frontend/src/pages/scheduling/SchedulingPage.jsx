@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import './SchedulingPage.css';
 
+// ADD THIS DICTIONARY NEAR THE TOP
 const STATUS_BR = {
   SCHEDULED: 'Agendado',
   CONFIRMED: 'Confirmado',
@@ -10,29 +11,46 @@ const STATUS_BR = {
   MISSED: 'Faltou'
 };
 
+// ADD THIS DICTIONARY FOR PAYMENTS
+const PAYMENT_METHODS_BR = {
+  PIX: 'Pix',
+  CREDIT_CARD: 'Cartão de Crédito',
+  DEBIT_CARD: 'Cartão de Débito',
+  CASH: 'Dinheiro'
+};
+
 export default function SchedulingPage() {
+  // --- MASTER DATA (For Dropdowns) ---
   const [clients, setClients] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [procedures, setProcedures] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
+  // --- BOOKING FORM STATE ---
   const [form, setForm] = useState({
     clientId: '',
     specialistId: '',
     procedureId: '',
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0], // Today's date default
     start: '09:00'
   });
   const [bookingLoading, setBookingLoading] = useState(false);
 
+  // --- AGENDA STATE ---
   const [agendaDate, setAgendaDate] = useState(new Date().toISOString().split('T')[0]);
   const [agendaSpecialistId, setAgendaSpecialistId] = useState('');
   const [agenda, setAgenda] = useState([]);
   const [agendaLoading, setAgendaLoading] = useState(false);
 
+  // --- CHECKOUT STATE ---
+  const [checkoutModal, setCheckoutModal] = useState({ isOpen: false, appointment: null });
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
   const handleStatusChange = async (schedulingId, action) => {
     try {
       await api.put(`/api/schedulings/${schedulingId}/status?action=${action}`);
+      // Refresh the agenda so the UI updates and slots open up if canceled
       fetchAgenda(); 
     } catch (err) {
       if (err.response?.data) {
@@ -43,10 +61,12 @@ export default function SchedulingPage() {
     }
   };
 
+  // 1. Fetch all required data when the page loads
   useEffect(() => {
     fetchMasterData();
   }, []);
 
+  // 2. Fetch the agenda whenever the Agenda Date or Agenda Specialist changes
   useEffect(() => {
     if (agendaSpecialistId && agendaDate) {
       fetchAgenda();
@@ -55,6 +75,7 @@ export default function SchedulingPage() {
 
   async function fetchMasterData() {
     try {
+      // Execute all 3 API calls at the same time to be fast!
       const [clientsRes, empsRes, procsRes] = await Promise.all([
         api.get('/api/clients'),
         api.get('/api/employees'),
@@ -64,9 +85,11 @@ export default function SchedulingPage() {
       setClients(clientsRes.data);
       setProcedures(procsRes.data);
       
+      // Filter employees to ONLY show Specialists (people who can actually do procedures)
       const specList = empsRes.data.filter(emp => emp.commissionPercentage !== undefined);
       setSpecialists(specList);
 
+      // Pre-select the first specialist for the agenda view if available
       if (specList.length > 0) {
         setAgendaSpecialistId(specList[0].id);
       }
@@ -85,6 +108,7 @@ export default function SchedulingPage() {
       const response = await api.get(`/api/schedulings/daily`, {
         params: { specialistId: agendaSpecialistId, date: agendaDate }
       });
+      // Sort appointments chronologically by start time
       const sortedAgenda = response.data.sort((a, b) => a.start.localeCompare(b.start));
       setAgenda(sortedAgenda);
     } catch (err) {
@@ -103,20 +127,55 @@ export default function SchedulingPage() {
       await api.post('/api/schedulings', form);
       alert('Horário agendado com sucesso!');
       
+      // If the booking was for the currently viewed agenda, refresh it!
       if (form.date === agendaDate && form.specialistId === agendaSpecialistId) {
         fetchAgenda();
       }
       
+      // Reset the time so we don't accidentally double-book
       setForm({ ...form, start: '' }); 
 
     } catch (err) {
       if (err.response?.data) {
-        alert(`Erro: ${err.response.data}`);
+        alert(`Erro: ${err.response.data}`); // e.g. "Horário conflitante" or "Fora do expediente"
       } else {
         alert('Erro ao realizar agendamento.');
       }
     } finally {
       setBookingLoading(false);
+    }
+  };
+
+  // --- CHECKOUT HANDLER ---
+  const handleCheckoutSubmit = async (e) => {
+    e.preventDefault();
+    setCheckoutLoading(true);
+
+    try {
+      const schedulingId = checkoutModal.appointment.id;
+
+      // 1. Create the payment based on the teammate's endpoint format (@RequestParam)
+      const createResponse = await api.post(`/payments?schedulingId=${schedulingId}&paymentMethod=${paymentMethod}`);
+      const paymentId = createResponse.data.id;
+
+      // 2. Immediately mark it as Paid (Simulating a fast 1-click checkout)
+      await api.put(`/payments/${paymentId}/pay`);
+
+      alert('Pagamento registrado com sucesso!');
+      
+      // Close modal and refresh agenda
+      setCheckoutModal({ isOpen: false, appointment: null });
+      setPaymentMethod('');
+      fetchAgenda();
+
+    } catch (err) {
+      if (err.response?.data?.message) {
+        alert(`Erro: ${err.response.data.message}`);
+      } else {
+        alert('Erro ao processar o pagamento.');
+      }
+    } finally {
+      setCheckoutLoading(false);
     }
   };
 
@@ -128,6 +187,7 @@ export default function SchedulingPage() {
       
       <div className="scheduling-layout">
         
+        {/* LEFT COLUMN: THE BOOKING FORM */}
         <div className="booking-card">
           <h3>Nova Reserva</h3>
           <form onSubmit={handleBookAppointment}>
@@ -265,6 +325,14 @@ export default function SchedulingPage() {
                             <button onClick={() => handleStatusChange(appt.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
                           </>
                         )}
+                        {appt.status === 'COMPLETED' && (
+                          <button 
+                            onClick={() => setCheckoutModal({ isOpen: true, appointment: appt })} 
+                            className="btn-action btn-checkout"
+                          >
+                            💲 Ir para o Caixa
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -281,6 +349,49 @@ export default function SchedulingPage() {
 
         </div>
       </div>
+
+      {/* --- CHECKOUT MODAL --- */}
+      {checkoutModal.isOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Caixa: Finalizar Pagamento</h3>
+            <p><strong>Cliente:</strong> {checkoutModal.appointment.client.firstName} {checkoutModal.appointment.client.lastName}</p>
+            <p><strong>Serviço:</strong> {checkoutModal.appointment.procedure.name}</p>
+            
+            <form onSubmit={handleCheckoutSubmit} style={{ marginTop: '20px' }}>
+              <div className="form-group">
+                <label>Método de Pagamento *</label>
+                <select 
+                  required 
+                  className="form-control"
+                  value={paymentMethod}
+                  onChange={e => setPaymentMethod(e.target.value)}
+                >
+                  <option value="">Selecione...</option>
+                  {Object.entries(PAYMENT_METHODS_BR).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" className="submit-btn" disabled={checkoutLoading}>
+                  {checkoutLoading ? 'Processando...' : 'Confirmar Pagamento'}
+                </button>
+                <button 
+                  type="button" 
+                  className="submit-btn" 
+                  style={{ background: '#c62828' }} 
+                  onClick={() => setCheckoutModal({ isOpen: false, appointment: null })}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
