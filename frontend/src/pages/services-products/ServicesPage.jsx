@@ -155,13 +155,13 @@ export default function ServicesPage() {
           className={`tab-button ${activeTab === 'products' ? 'active' : ''}`}
           onClick={() => setActiveTab('products')}
         >
-          📦 Produtos (Estoque)
+          Produtos (Estoque)
         </button>
         <button 
           className={`tab-button ${activeTab === 'procedures' ? 'active' : ''}`}
           onClick={() => setActiveTab('procedures')}
         >
-          ✂️ Procedimentos (Serviços)
+          Procedimentos (Serviços)
         </button>
       </div>
 

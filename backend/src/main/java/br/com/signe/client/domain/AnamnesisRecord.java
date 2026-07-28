@@ -35,7 +35,7 @@ public class AnamnesisRecord {
     @Enumerated(EnumType.STRING)
     private HairProfile hairProfile;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER) // force fetch pra resolver o erro de não criar a ficha
     @CollectionTable(name = "tb_form_allergies", joinColumns = @JoinColumn(name = "form_id"))
     @Column(name = "allergy")
     private List<String> allergies = new ArrayList<>();

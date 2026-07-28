@@ -14,8 +14,6 @@ function formatEnum(dict, value) {
 }
 
 function ClientsPage() {
-  // --- MOCK PERMISSION SYSTEM ---
-  // No futuro, isso virá do login do usuário (token JWT)
   const currentUserRole = 'ADMIN'; 
 
   const [Clients, setClients] = useState([]);
@@ -113,10 +111,9 @@ function ClientsPage() {
     fetchClients();
   }
 
-  // Lógica do Toggle de Edição
+  // toggle de edição
   function toggleEditMode() {
     if (isEditMode) {
-      // Se estamos DESLIGANDO o modo edição, descartamos alterações não salvas
       setProfileForm({
         firstName: selectedClient.firstName || '',
         lastName: selectedClient.lastName || '',
@@ -140,7 +137,7 @@ function ClientsPage() {
     setIsEditMode(!isEditMode);
   }
 
-  // --- DIRTY CHECKING (Verifica se algo foi alterado) ---
+  // dirty checking
   const isFirstNameDirty = selectedClient && profileForm.firstName !== (selectedClient.firstName || '');
   const isLastNameDirty = selectedClient && profileForm.lastName !== (selectedClient.lastName || '');
   const isPhoneNumberDirty = selectedClient && profileForm.phoneNumber !== (selectedClient.phoneNumber || '');
@@ -227,15 +224,26 @@ function ClientsPage() {
     }
   }
 
+  async function handleDeleteClient(clientId, name) {
+    if (!window.confirm(`Deseja realmente desligar o cliente ${name}?`)) return;
+    try {
+      await api.delete(`/api/clients/${clientId}`);
+      showNotification("Cliente removido com sucesso.");
+      fetchClients();
+    } catch (err) {
+      showNotification("Erro ao remover cliente.");
+    }
+  }
+
   function formatDateBr(dateString) {
     if (!dateString) return "";
     const [year, month, day] = dateString.split('-');
     return `${day}/${month}/${year}`;
   }
 
-  /* =========================
-  TELA 1: DETALHES / EDIÇÃO
-  ========================== */
+  // =========================
+  // TELA 1: DETALHES / EDIÇÃO (após o usuário apertar o botão na principak)
+  // =========================
 
   if(selectedClient){
     return(
@@ -248,10 +256,10 @@ function ClientsPage() {
 
         <div className="client-details-card">
           
-          <div className="detail-header">
+          <div className="details-header">
             <h2>Perfil do Cliente</h2>
             
-            {/* SISTEMA DE PERMISSÃO: O switch só aparece pra ADMINs */}
+            {/* o switch só aparece se a role for ADMIN (por enquanto todo mundo é admin ent whatever) */}
             {(currentUserRole === 'ADMIN'|| 'SPECIALIST') && (
               <div className="edit-toggle-container">
                 <span className="toggle-label">{isEditMode ? "Modo Edição" : "Modo Visualização"}</span>
@@ -263,7 +271,6 @@ function ClientsPage() {
             )}
           </div>
 
-          {/* AVISO DE ALTERAÇÕES NÃO SALVAS */}
           {isEditMode && (hasUnsavedChanges || isAnamnesisDirty) && (
             <div className="unsaved-warning">
               ⚠️ Você possui alterações de contato não salvas.
@@ -273,7 +280,7 @@ function ClientsPage() {
           <div className="details-section">
             <h3>Informações Básicas</h3>
 
-            {/* RENDERIZAÇÃO CONDICIONAL: Visualização vs Edição */}
+            {/* renderização condicional */}
             {!isEditMode ? (
               <div className="view-mode-info">
                 <p><strong>Nome:</strong> {selectedClient.firstName} {selectedClient.lastName}</p>
@@ -331,7 +338,7 @@ function ClientsPage() {
                     onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
                   />
                 </div>
-                {/* O botão só é habilitado se houver mudanças reais para salvar */}
+                {/* só dá pra atualizar se o usuário tiver mudado algum campo */}
                 <button type="submit" className="save-btn" disabled={!hasUnsavedChanges}>
                   Salvar Contato
                 </button>
@@ -451,9 +458,9 @@ function ClientsPage() {
     );
   }
 
-  /* =========================
-  TELA 2: LISTAGEM PRINCIPAL
-  ========================== */
+  // =========================
+  // TELA 2: LISTAGEM PRINCIPAL
+  // =========================
   return (
     <div className="page-container">
       <h1>Clientes</h1>
@@ -479,6 +486,12 @@ function ClientsPage() {
                 style={{ padding: '8px 16px', cursor: 'pointer' }}
               >
                 Detalhar
+              </button>
+              <button 
+                className="delete-btn" 
+                onClick={() => handleDeleteClient(Client.id, Client.firstName)}
+              >
+                Excluir
               </button>
             </li>
           ))}

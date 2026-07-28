@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface SchedulingRepository extends JpaRepository<Scheduling, Long> {
+public interface SchedulingRepository extends JpaRepository<Scheduling, UUID> {
 
     @Query("SELECT s FROM Scheduling s WHERE s.specialist.id = :specialistId " +
             "AND s.status = :status " +

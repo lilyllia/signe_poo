@@ -154,7 +154,6 @@ public class ClientService {
         AnamnesisRecord record = anamnesisRecordRepository.findByClientId(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Ficha de anamnese não encontrada. Crie uma ficha em branco primeiro."));
 
-        // Cria um novo objeto Embutido (HairProfile) com os dados recebidos
         HairProfile newHairProfile = new HairProfile(
                 req.hairShape(),
                 req.hairPorosity(),
@@ -164,7 +163,6 @@ public class ClientService {
                 req.damaged()
         );
 
-        // Usa o novo método que criamos na entidade para atualizar tudo!
         record.updateDetails(req.skinType(), newHairProfile, req.progressNotes());
 
         return anamnesisRecordRepository.save(record);
