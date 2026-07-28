@@ -40,12 +40,34 @@ public class Schedule {
         this.date = date;
     }
 
-    // métodos de negócio
+    public Long getScheduleId() {
+        return scheduleId;
+    }
 
-    public void addScheduling(Scheduling scheduling) {
+    public void setScheduleId(Long scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    public Specialist getSpecialist() {
+        return specialist;
+    }
+
+    public void setSpecialist(Specialist specialist) {
+        this.specialist = specialist;
+    }
+
+    public List<Scheduling> getSchedulings() {
+        return schedulings;
+    }
+
+    public void setSchedulings(List<Scheduling> schedulings) {
+        this.schedulings = schedulings;
+    }
+
+    public void addScheduling(br.com.signe.schedule.Scheduling scheduling) {
         if (isAvailable(scheduling.getStart(), scheduling.getFinish())) {
-            this.schedulings.add(scheduling);
             scheduling.setSchedule(this);
+            schedulings.add(scheduling);
         } else {
             throw new IllegalArgumentException("O horário solicitado não está disponível.");
         }
