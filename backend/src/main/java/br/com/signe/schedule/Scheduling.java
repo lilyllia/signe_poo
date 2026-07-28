@@ -1,54 +1,56 @@
 package br.com.signe.schedule;
 
-import schedule.StatusScheduling;
 import br.com.signe.client.domain.Client;
 import br.com.signe.service.domain.Procedure;
 import br.com.signe.employee.domain.Specialist;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
+@Table(name = "tb_scheduling")
 @Getter
-@Setter
 public class Scheduling {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long schedulingId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(columnDefinition = "UUID")
+    private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialist_id", nullable = false)
     private Specialist specialist;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "procedure_id", nullable = false)
     private Procedure procedure;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalTime start;
 
-    @Column(nullable = false)
+    @Column(name = "finish_time", nullable = false)
     private LocalTime finish;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusScheduling status;
 
-    public Scheduling() {}
+    protected Scheduling() {}
 
-        public Scheduling(Client client, Specialist specialist, Procedure procedure, LocalTime start, LocalTime finish) {
+    public Scheduling(Client client, Specialist specialist, Procedure procedure, LocalTime start, LocalTime finish) {
         this.client = Objects.requireNonNull(client, "Cliente é obrigatório.");
         this.specialist = Objects.requireNonNull(specialist, "Especialista é obrigatório.");
         this.procedure = Objects.requireNonNull(procedure, "Procedimento é obrigatório.");
@@ -56,51 +58,40 @@ public class Scheduling {
         this.finish = Objects.requireNonNull(finish, "Data final é obrigatória.");
 
         if (!finish.isAfter(start)) {
-            throw new IllegalArgumentException(
-                    "O horário final deve ser posterior ao horário inicial.");
+            throw new IllegalArgumentException("O horário final deve ser posterior ao horário inicial.");
         }
         this.status = StatusScheduling.SCHEDULED;
     }
 
-    public void confirmScheduling(){
-        if(status != StatusScheduling.SCHEDULED){
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
+    }
+
+    public void confirmScheduling() {
+        if(status != StatusScheduling.SCHEDULED) {
             throw new IllegalStateException("Só é possivel confirmar horários AGENDADOS.");
         }
-        status = StatusScheduling.CONFIRMED;
+        this.status = StatusScheduling.CONFIRMED;
     }
 
-    public void cancelScheduling(){
-        if(status != StatusScheduling.SCHEDULED && status != StatusScheduling.CONFIRMED){
+    public void cancelScheduling() {
+        if(status != StatusScheduling.SCHEDULED && status != StatusScheduling.CONFIRMED) {
             throw new IllegalStateException("Só é possivel cancelar horários AGENDADOS ou CONFIRMADOS.");
         }
-        status = StatusScheduling.CANCELLED;
+        this.status = StatusScheduling.CANCELLED;
     }
 
-    public void completedService(){
-        if(status != StatusScheduling.CONFIRMED){
+    public void completedService() {
+        if(status != StatusScheduling.CONFIRMED) {
             throw new IllegalStateException("Só é possivel completar serviços de horários CONFIRMADOS.");
         }
-        status = StatusScheduling.COMPLETED;
+        this.status = StatusScheduling.COMPLETED;
     }
 
-    public void missScheduling(){
-
-        if(status != StatusScheduling.CONFIRMED){
-            throw new IllegalStateException(
-                    "Somente horários confirmados podem ser marcados como falta.");
+    public void missScheduling() {
+        if(status != StatusScheduling.CONFIRMED) {
+            throw new IllegalStateException("Somente horários confirmados podem ser marcados como falta.");
         }
-
-        status = StatusScheduling.MISSED;
-    }
-    @Override
-    public String toString() {
-        return "Scheduling{" +
-                "client=" + client +
-                ", specialist=" + specialist +
-                ", procedure=" + procedure +
-                ", start=" + start +
-                ", finish=" + finish +
-                ", status=" + status +
-                '}';
+        this.status = StatusScheduling.MISSED;
     }
 }

@@ -317,10 +317,10 @@ export default function EmployeesPage() {
 
             <div className="tabs-header">
               <button className={`tab-btn ${activeTab === 'list' ? 'active' : ''}`} onClick={() => setActiveTab('list')}>
-                📋 Equipe Ativa
+                Equipe Ativa
               </button>
               <button className={`tab-btn ${activeTab === 'new' ? 'active' : ''}`} onClick={() => setActiveTab('new')}>
-                ➕ Contratar Funcionário
+                Contratar Funcionário
               </button>
             </div>
 
