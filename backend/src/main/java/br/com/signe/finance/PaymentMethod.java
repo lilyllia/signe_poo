@@ -12,11 +12,11 @@ public enum PaymentMethod {
 
     private final String description;
 
-    PaymentMethod(String description){
+    PaymentMethod(String description) {
         this.description = description;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return description;
     }
 }
