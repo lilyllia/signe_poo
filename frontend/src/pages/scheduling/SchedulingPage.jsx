@@ -2,35 +2,51 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import './SchedulingPage.css';
 
+const STATUS_BR = {
+  SCHEDULED: 'Agendado',
+  CONFIRMED: 'Confirmado',
+  COMPLETED: 'Concluído',
+  CANCELLED: 'Cancelado',
+  MISSED: 'Faltou'
+};
+
 export default function SchedulingPage() {
-  // --- MASTER DATA (For Dropdowns) ---
   const [clients, setClients] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [procedures, setProcedures] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // --- BOOKING FORM STATE ---
   const [form, setForm] = useState({
     clientId: '',
     specialistId: '',
     procedureId: '',
-    date: new Date().toISOString().split('T')[0], // Today's date default
+    date: new Date().toISOString().split('T')[0],
     start: '09:00'
   });
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  // --- AGENDA STATE ---
   const [agendaDate, setAgendaDate] = useState(new Date().toISOString().split('T')[0]);
   const [agendaSpecialistId, setAgendaSpecialistId] = useState('');
   const [agenda, setAgenda] = useState([]);
   const [agendaLoading, setAgendaLoading] = useState(false);
 
-  // 1. Fetch all required data when the page loads
+  const handleStatusChange = async (schedulingId, action) => {
+    try {
+      await api.put(`/api/schedulings/${schedulingId}/status?action=${action}`);
+      fetchAgenda(); 
+    } catch (err) {
+      if (err.response?.data) {
+        alert(`Erro: ${err.response.data}`);
+      } else {
+        alert('Erro ao atualizar status do agendamento.');
+      }
+    }
+  };
+
   useEffect(() => {
     fetchMasterData();
   }, []);
 
-  // 2. Fetch the agenda whenever the Agenda Date or Agenda Specialist changes
   useEffect(() => {
     if (agendaSpecialistId && agendaDate) {
       fetchAgenda();
@@ -39,7 +55,6 @@ export default function SchedulingPage() {
 
   async function fetchMasterData() {
     try {
-      // Execute all 3 API calls at the same time to be fast!
       const [clientsRes, empsRes, procsRes] = await Promise.all([
         api.get('/api/clients'),
         api.get('/api/employees'),
@@ -49,11 +64,9 @@ export default function SchedulingPage() {
       setClients(clientsRes.data);
       setProcedures(procsRes.data);
       
-      // Filter employees to ONLY show Specialists (people who can actually do procedures)
       const specList = empsRes.data.filter(emp => emp.commissionPercentage !== undefined);
       setSpecialists(specList);
 
-      // Pre-select the first specialist for the agenda view if available
       if (specList.length > 0) {
         setAgendaSpecialistId(specList[0].id);
       }
@@ -72,7 +85,6 @@ export default function SchedulingPage() {
       const response = await api.get(`/api/schedulings/daily`, {
         params: { specialistId: agendaSpecialistId, date: agendaDate }
       });
-      // Sort appointments chronologically by start time
       const sortedAgenda = response.data.sort((a, b) => a.start.localeCompare(b.start));
       setAgenda(sortedAgenda);
     } catch (err) {
@@ -91,17 +103,15 @@ export default function SchedulingPage() {
       await api.post('/api/schedulings', form);
       alert('Horário agendado com sucesso!');
       
-      // If the booking was for the currently viewed agenda, refresh it!
       if (form.date === agendaDate && form.specialistId === agendaSpecialistId) {
         fetchAgenda();
       }
       
-      // Reset the time so we don't accidentally double-book
       setForm({ ...form, start: '' }); 
 
     } catch (err) {
       if (err.response?.data) {
-        alert(`Erro: ${err.response.data}`); // e.g. "Horário conflitante" or "Fora do expediente"
+        alert(`Erro: ${err.response.data}`);
       } else {
         alert('Erro ao realizar agendamento.');
       }
@@ -118,7 +128,6 @@ export default function SchedulingPage() {
       
       <div className="scheduling-layout">
         
-        {/* LEFT COLUMN: THE BOOKING FORM */}
         <div className="booking-card">
           <h3>Nova Reserva</h3>
           <form onSubmit={handleBookAppointment}>
@@ -239,11 +248,29 @@ export default function SchedulingPage() {
                     </div>
                     <div className="timeline-details" style={{ flex: 1, padding: '0 15px' }}>
                       <h4>{appt.client.firstName} {appt.client.lastName}</h4>
-                      <p>{appt.procedure.name}</p>
+                      <p>✂️ {appt.procedure.name}</p>
+                      
+                      {/* ACTION BUTTONS BASED ON STATUS */}
+                      <div className="timeline-actions" style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                        {appt.status === 'SCHEDULED' && (
+                          <>
+                            <button onClick={() => handleStatusChange(appt.id, 'confirm')} className="btn-action btn-confirm">Confirmar</button>
+                            <button onClick={() => handleStatusChange(appt.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
+                          </>
+                        )}
+                        {appt.status === 'CONFIRMED' && (
+                          <>
+                            <button onClick={() => handleStatusChange(appt.id, 'complete')} className="btn-action btn-complete">Concluir</button>
+                            <button onClick={() => handleStatusChange(appt.id, 'miss')} className="btn-action btn-miss">Faltou</button>
+                            <button onClick={() => handleStatusChange(appt.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
+                          </>
+                        )}
+                      </div>
                     </div>
                     <div>
+                      {/* TRANSLATED STATUS BADGE */}
                       <span className={`status-badge status-${appt.status}`}>
-                        {appt.status}
+                        {STATUS_BR[appt.status] || appt.status}
                       </span>
                     </div>
                   </div>

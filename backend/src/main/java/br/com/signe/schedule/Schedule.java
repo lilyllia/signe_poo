@@ -57,8 +57,10 @@ public class Schedule {
     }
 
     public boolean isAvailable(LocalTime start, LocalTime finish) {
-        return schedulings.stream().noneMatch(s ->
-                !(finish.isBefore(s.getStart()) || start.isAfter(s.getFinish()))
-        );
+        return schedulings.stream()
+                .filter(s -> s.getStatus() != StatusScheduling.CANCELLED && s.getStatus() != StatusScheduling.MISSED)
+                .noneMatch(s ->
+                        !(finish.isBefore(s.getStart()) || start.isAfter(s.getFinish()))
+                );
     }
 }
