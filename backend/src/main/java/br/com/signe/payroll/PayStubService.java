@@ -1,7 +1,7 @@
 package br.com.signe.payroll;
 
 import br.com.signe.employee.domain.Specialist;
-import br.com.signe.employee.SpecialistRepository;
+import br.com.signe.employee.domain.SpecialistRepository;
 import br.com.signe.schedule.Scheduling;
 import br.com.signe.schedule.SchedulingRepository;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PayStubService {
@@ -27,7 +28,7 @@ public class PayStubService {
     }
 
     @Transactional
-    public PayStub generatePayStub(String specialistId, int month, int year) {
+    public PayStub generatePayStub(UUID specialistId, int month, int year) {
 
         Specialist specialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new IllegalArgumentException("Especialista não encontrado."));
@@ -46,15 +47,17 @@ public class PayStubService {
 
         PayStub payStub = new PayStub(specialist, month, year);
 
+        // Zera a produtividade acumulada antes de recalcular o período,
+        // já que Specialist não tem mais setProductivity(double).
+        specialist.resetProductivity();
+
         for (Scheduling scheduling : completedSchedulings) {
-            payStub.addService(
-                    scheduling.getProcedure().getName(),
-                    scheduling.getProcedure().getCost()
-            );
+            double cost = scheduling.getProcedure().getCost();
+
+            payStub.addService(scheduling.getProcedure().getName(), cost);
+            specialist.addProductivity(cost);
         }
 
-        // aplica a produtividade calculada na regra de comissão do especialista
-        specialist.setProductivity(payStub.getProductivity());
         double totalSalary = specialist.calculateSalary();
         payStub.setTotalSalary(totalSalary);
 
@@ -63,7 +66,7 @@ public class PayStubService {
         return payStubRepository.save(payStub);
     }
 
-    public List<PayStub> listBySpecialist(String specialistId) {
+    public List<PayStub> listBySpecialist(UUID specialistId) {
         return payStubRepository.findBySpecialist_Id(specialistId);
     }
 

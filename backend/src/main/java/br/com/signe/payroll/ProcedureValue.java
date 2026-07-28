@@ -18,4 +18,3 @@ public class ProcedureValue {
     public String getProcedureName() { return procedureName; }
     public double getValue() { return value; }
 }
-

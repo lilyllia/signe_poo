@@ -5,12 +5,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface PayStubRepository extends JpaRepository<PayStub, Long> {
 
-    List<PayStub> findBySpecialist_Id(String specialistId);
+    List<PayStub> findBySpecialist_Id(UUID specialistId);
 
     Optional<PayStub> findBySpecialist_IdAndReferenceMonthAndReferenceYear(
-            String specialistId, int referenceMonth, int referenceYear);
+            UUID specialistId, int referenceMonth, int referenceYear);
 }

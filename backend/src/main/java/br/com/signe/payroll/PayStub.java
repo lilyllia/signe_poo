@@ -1,6 +1,6 @@
 package br.com.signe.payroll;
 
-import br.com.signe.employee.Specialist;
+import br.com.signe.employee.domain.Specialist;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

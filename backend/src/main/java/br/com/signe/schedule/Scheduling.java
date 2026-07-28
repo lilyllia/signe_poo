@@ -41,6 +41,9 @@ public class Scheduling {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
+    @Column(name ="scheduling_date", nullable = false)
+    private LocalDate date;
+
     @Column(name = "start_time", nullable = false)
     private LocalTime start;
 
@@ -57,6 +60,7 @@ public class Scheduling {
         this.client = Objects.requireNonNull(client, "Cliente é obrigatório.");
         this.specialist = Objects.requireNonNull(specialist, "Especialista é obrigatório.");
         this.procedure = Objects.requireNonNull(procedure, "Procedimento é obrigatório.");
+        this.date = Objects.requireNonNull(LocalDate.now(), "Data do agendamento é obrigatória.");
         this.start = Objects.requireNonNull(start, "Data inicial é obrigatória.");
         this.finish = Objects.requireNonNull(finish, "Data final é obrigatória.");
 
@@ -64,6 +68,10 @@ public class Scheduling {
             throw new IllegalArgumentException("O horário final deve ser posterior ao horário inicial.");
         }
         this.status = StatusScheduling.SCHEDULED;
+    }
+
+    public UUID getSchedulingId() {
+        return id;
     }
 
     public void setSchedule(Schedule schedule) {
