@@ -4,6 +4,7 @@ import Home from './pages/Home.jsx';
 import ClientsPage from './pages/clients/ClientsPage.jsx';
 import EmployeesPage from './pages/employees/EmployeesPage.jsx';
 import ServicesPage from './pages/services-products/ServicesPage.jsx';
+import SchedulingPage from './pages/scheduling/SchedulingPage.jsx';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/employees" element={<EmployeesPage/>} />
         <Route path="/services" element={<ServicesPage/>} />
+        <Route path="/scheduling" element={<SchedulingPage/>} />
       </Routes>
     </>
   );

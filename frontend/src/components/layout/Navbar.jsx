@@ -11,7 +11,6 @@ function Navbar() {
         <NavLink to="/employees" className="navbar-link">Funcionários</NavLink>
         <NavLink to="/services" className="navbar-link">Estoque & Serviços</NavLink>
         <NavLink to="/scheduling" className="navbar-link">Agendamentos</NavLink>
-        <NavLink to="/reports" className="navbar-link">Relatórios</NavLink>
       </div>
     </nav>
   );
