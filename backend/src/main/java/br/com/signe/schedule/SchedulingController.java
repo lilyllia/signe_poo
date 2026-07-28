@@ -29,7 +29,7 @@ public class SchedulingController {
         return ResponseEntity.ok(schedulings);
     }
 
-    // --- 1. BOOK A NEW APPOINTMENT ---
+    // 1. create - novo agendamento
     @PostMapping
     public ResponseEntity<AppointmentResponse> bookAppointment(@RequestBody BookAppointmentRequest request) {
         AppointmentResponse newAppointment = schedulingService.bookAppointment(
@@ -40,6 +40,13 @@ public class SchedulingController {
                 request.start()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(newAppointment);
+    }
+
+    // 2. update - atualizar status
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> updateStatus(@PathVariable UUID id, @RequestParam String action) {
+        schedulingService.updateSchedulingStatus(id, action);
+        return ResponseEntity.noContent().build();
     }
 
     // --- ERROR HANDLER ---

@@ -166,3 +166,37 @@ font-style: italic;
 grid-template-columns: 1fr;
 }
 }
+
+/* STREAMING_CHUNK: Timeline Action Buttons */
+.timeline-actions {
+display: flex;
+gap: 8px;
+margin-top: 10px;
+}
+
+.btn-action {
+padding: 4px 10px;
+border-radius: 6px;
+font-size: 0.8em;
+font-weight: bold;
+cursor: pointer;
+border: 1px solid transparent;
+background: white;
+transition: 0.2s;
+}
+
+.btn-confirm { color: #2e7d32; border-color: #2e7d32; }
+.btn-confirm:hover { background: #e8f5e9; }
+
+.btn-complete { color: #1565c0; border-color: #1565c0; }
+.btn-complete:hover { background: #e3f2fd; }
+
+.btn-cancel { color: #c62828; border-color: #c62828; }
+.btn-cancel:hover { background: #ffebee; }
+
+.btn-miss { color: #f57c00; border-color: #f57c00; }
+.btn-miss:hover { background: #fff3e0; }
+
+.status-badge {
+padding: 4px 10px;
+}

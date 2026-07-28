@@ -256,7 +256,7 @@ function ClientsPage() {
 
         <div className="client-details-card">
           
-          <div className="detail-header">
+          <div className="details-header">
             <h2>Perfil do Cliente</h2>
             
             {/* o switch só aparece se a role for ADMIN (por enquanto todo mundo é admin ent whatever) */}

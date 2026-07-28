@@ -21,18 +21,18 @@ public class SchedulingService {
     private final ClientRepository clientRepository;
     private final EmployeeRepository employeeRepository;
     private final ProcedureRepository procedureRepository;
+    private final SchedulingRepository schedulingRepository;
 
-    public SchedulingService(ScheduleRepository scheduleRepository, ClientRepository clientRepository, EmployeeRepository employeeRepository, ProcedureRepository procedureRepository) {
+    public SchedulingService(ScheduleRepository scheduleRepository, ClientRepository clientRepository, EmployeeRepository employeeRepository, ProcedureRepository procedureRepository, SchedulingRepository schedulingRepository) {
         this.scheduleRepository = scheduleRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.procedureRepository = procedureRepository;
+        this.schedulingRepository = schedulingRepository;
     }
 
-    // --- NEW: FETCH DAILY SCHEDULE ---
     @Transactional(readOnly = true)
     public List<AppointmentResponse> getDailySchedule(UUID specialistId, LocalDate date) {
-        // If there's a schedule, map its appointments to our safe DTO!
         return scheduleRepository.findBySpecialistIdAndDate(specialistId, date)
                 .map(schedule -> schedule.getSchedulings().stream()
                         .map(this::toResponse)
@@ -44,7 +44,6 @@ public class SchedulingService {
     @Transactional
     public AppointmentResponse bookAppointment(UUID clientId, UUID specialistId, UUID procedureId, LocalDate date, LocalTime start) {
 
-        // 1. Fetch the Client, Specialist, and Procedure
         Client client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado."));
 
@@ -54,31 +53,49 @@ public class SchedulingService {
         Procedure procedure = procedureRepository.findById(procedureId)
                 .orElseThrow(() -> new IllegalArgumentException("Procedimento não encontrado."));
 
-        // 2. Calculate the exact finish time based on the procedure's duration
         LocalTime finish = start.plusMinutes(procedure.getAverageDuration());
 
-        // 3. Verify if the specialist actually works during these hours
         if (!specialist.isWithinWorkingHours(start, finish)) {
             throw new IllegalArgumentException("O horário solicitado (" + start + " às " + finish + ") está fora do expediente do especialista.");
         }
 
-        // 4. Find the Specialist's schedule for this specific day, OR create a new one if it's their first appointment of the day!
         Schedule dailySchedule = scheduleRepository.findBySpecialistIdAndDate(specialist.getId(), date)
                 .orElseGet(() -> new Schedule(specialist, date));
 
-        // 5. Create the appointment
         Scheduling newAppointment = new Scheduling(client, specialist, procedure, start, finish);
 
-        // 6. Attempt to add it to the daily schedule.
         dailySchedule.addScheduling(newAppointment);
 
-        // 7. Save the daily schedule
         scheduleRepository.save(dailySchedule);
 
         return toResponse(newAppointment);
     }
 
-    // --- HELPER METHOD TO MAP ENTITY TO DTO ---
+    @Transactional
+    public void updateSchedulingStatus(UUID schedulingId, String action) {
+        Scheduling scheduling = schedulingRepository.findById(schedulingId)
+                .orElseThrow(() -> new IllegalArgumentException("Agendamento não encontrado."));
+
+        switch (action.toLowerCase()) {
+            case "confirm":
+                scheduling.confirmScheduling();
+                break;
+            case "cancel":
+                scheduling.cancelScheduling();
+                break;
+            case "complete":
+                scheduling.completedService();
+                break;
+            case "miss":
+                scheduling.missScheduling();
+                break;
+            default:
+                throw new IllegalArgumentException("Ação de status inválida.");
+        }
+
+        schedulingRepository.save(scheduling);
+    }
+
     private AppointmentResponse toResponse(Scheduling s) {
         return new AppointmentResponse(
                 s.getId(),
