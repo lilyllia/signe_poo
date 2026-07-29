@@ -4,6 +4,8 @@ import br.com.signe.client.domain.Client;
 import br.com.signe.client.repository.ClientRepository;
 import br.com.signe.employee.domain.Specialist;
 import br.com.signe.employee.repository.EmployeeRepository;
+import br.com.signe.finance.PaymentRepository;
+import br.com.signe.finance.PaymentStatus;
 import br.com.signe.service.domain.Procedure;
 import br.com.signe.service.repository.ProcedureRepository;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,15 @@ public class SchedulingService {
     private final EmployeeRepository employeeRepository;
     private final ProcedureRepository procedureRepository;
     private final SchedulingRepository schedulingRepository;
+    private final PaymentRepository paymentRepository;
 
-    public SchedulingService(ScheduleRepository scheduleRepository, ClientRepository clientRepository, EmployeeRepository employeeRepository, ProcedureRepository procedureRepository, SchedulingRepository schedulingRepository) {
+    public SchedulingService(ScheduleRepository scheduleRepository, ClientRepository clientRepository, EmployeeRepository employeeRepository, ProcedureRepository procedureRepository, SchedulingRepository schedulingRepository, PaymentRepository paymentRepository) {
         this.scheduleRepository = scheduleRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.procedureRepository = procedureRepository;
         this.schedulingRepository = schedulingRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Transactional(readOnly = true)
@@ -97,11 +101,16 @@ public class SchedulingService {
     }
 
     private AppointmentResponse toResponse(Scheduling s) {
+        boolean isPaid = paymentRepository.findBySchedulingId(s.getId())
+                .map(payment -> payment.getStatus() == PaymentStatus.COMPLETED)
+                .orElse(false);
+
         return new AppointmentResponse(
                 s.getId(),
                 s.getStart().toString(),
                 s.getFinish().toString(),
                 s.getStatus().name(),
+                isPaid, // <-- INJECTED HERE
                 new AppointmentResponse.ClientSummary(s.getClient().getId(), s.getClient().getFirstName(), s.getClient().getLastName()),
                 new AppointmentResponse.ProcedureSummary(s.getProcedure().getId(), s.getProcedure().getName())
         );

@@ -1,0 +1,258 @@
+    .payroll-page {
+max-width: 1000px;
+margin: 0 auto;
+padding: 20px;
+animation: fadeIn 0.3s ease-in-out;
+}
+
+.subtitle {
+color: #666;
+margin-top: -10px;
+margin-bottom: 30px;
+}
+
+.payroll-layout {
+display: grid;
+grid-template-columns: 350px 1fr;
+gap: 20px;
+}
+
+.card {
+background: white;
+border-radius: 12px;
+padding: 25px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+border: 1px solid #e2d8d0;
+}
+
+.form-group {
+display: flex;
+flex-direction: column;
+gap: 8px;
+margin-bottom: 15px;
+}
+
+.form-row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 10px;
+}
+
+.form-group label {
+font-size: 0.9em;
+font-weight: bold;
+color: #555;
+}
+
+.form-group select, .form-group input {
+padding: 10px;
+border: 1px solid #ccc;
+border-radius: 6px;
+font-size: 14px;
+}
+
+.btn-generate {
+width: 100%;
+padding: 12px;
+background-color: #5c2d2d;
+color: white;
+border: none;
+border-radius: 6px;
+font-weight: bold;
+font-size: 1em;
+cursor: pointer;
+margin-top: 10px;
+transition: 0.2s;
+}
+
+.btn-generate:hover:not(:disabled) {
+background-color: #4a2424;
+}
+
+.btn-generate:disabled {
+background-color: #a89a9a;
+cursor: not-allowed;
+}
+
+/* History */
+.history-section {
+margin-top: 30px;
+border-top: 2px dashed #eee;
+padding-top: 20px;
+}
+
+.history-list {
+list-style: none;
+padding: 0;
+margin: 0;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.history-item {
+padding: 10px 15px;
+background-color: #fdfaf7;
+border: 1px solid #eee;
+border-radius: 6px;
+display: flex;
+justify-content: space-between;
+cursor: pointer;
+transition: 0.2s;
+font-size: 0.9em;
+}
+
+.history-item:hover {
+border-color: #5c2d2d;
+}
+
+.history-item.active {
+background-color: #5c2d2d;
+color: white;
+}
+
+.history-item.active .history-salary {
+color: #fff;
+}
+
+.history-salary {
+font-weight: bold;
+color: #2e7d32;
+}
+
+/* Receipt */
+.receipt-content {
+border: 1px solid #eee;
+border-radius: 8px;
+padding: 30px;
+background-color: #fff;
+}
+
+.receipt-header {
+border-bottom: 2px solid #5c2d2d;
+padding-bottom: 20px;
+margin-bottom: 20px;
+}
+
+.receipt-header h2 {
+margin: 0 0 15px 0;
+color: #5c2d2d;
+text-align: center;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.receipt-meta p {
+margin: 5px 0;
+color: #444;
+}
+
+.receipt-table {
+width: 100%;
+border-collapse: collapse;
+margin-bottom: 30px;
+}
+
+.receipt-table th, .receipt-table td {
+padding: 12px;
+border-bottom: 1px solid #eee;
+text-align: left;
+}
+
+.receipt-table th {
+background-color: #f9f9f9;
+color: #555;
+font-weight: bold;
+}
+
+.empty-services {
+text-align: center;
+color: #888;
+font-style: italic;
+padding: 20px;
+background: #f9f9f9;
+border-radius: 6px;
+}
+
+.receipt-footer {
+background-color: #fdfaf7;
+padding: 20px;
+border-radius: 8px;
+border: 1px solid #e2d8d0;
+}
+
+.summary-row {
+display: flex;
+justify-content: space-between;
+margin-bottom: 10px;
+color: #666;
+}
+
+.summary-row.total {
+font-size: 1.2em;
+font-weight: bold;
+color: #5c2d2d;
+margin-bottom: 0;
+padding-top: 10px;
+border-top: 1px solid #e2d8d0;
+}
+
+.btn-print {
+width: 100%;
+padding: 12px;
+margin-top: 20px;
+background-color: transparent;
+border: 2px solid #5c2d2d;
+color: #5c2d2d;
+font-weight: bold;
+border-radius: 6px;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.btn-print:hover {
+background-color: #f5f0eb;
+}
+
+.empty-state {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100%;
+color: #888;
+text-align: center;
+}
+
+.empty-icon {
+font-size: 3em;
+margin-bottom: 10px;
+opacity: 0.5;
+}
+
+.toast {
+position: fixed;
+bottom: 20px;
+right: 20px;
+padding: 12px 20px;
+border-radius: 8px;
+color: white;
+font-weight: bold;
+box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+z-index: 1000;
+animation: slideUp 0.3s ease-out;
+}
+
+.toast.success { background-color: #2e7d32; }
+.toast.error { background-color: #c62828; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Print Styles */
+@media print {
+body * { visibility: hidden; }
+.receipt-content, .receipt-content * { visibility: visible; }
+.receipt-content { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+.btn-print { display: none; }
+}

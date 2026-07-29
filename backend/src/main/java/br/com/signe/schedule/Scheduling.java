@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -38,6 +42,9 @@ public class Scheduling {
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
+    @Column(name ="scheduling_date", nullable = false)
+    private LocalDate date;
+
     @Column(name = "start_time", nullable = false)
     private LocalTime start;
 
@@ -54,6 +61,7 @@ public class Scheduling {
         this.client = Objects.requireNonNull(client, "Cliente é obrigatório.");
         this.specialist = Objects.requireNonNull(specialist, "Especialista é obrigatório.");
         this.procedure = Objects.requireNonNull(procedure, "Procedimento é obrigatório.");
+        this.date = Objects.requireNonNull(LocalDate.now(), "Data do agendamento é obrigatória.");
         this.start = Objects.requireNonNull(start, "Data inicial é obrigatória.");
         this.finish = Objects.requireNonNull(finish, "Data final é obrigatória.");
 
@@ -61,6 +69,10 @@ public class Scheduling {
             throw new IllegalArgumentException("O horário final deve ser posterior ao horário inicial.");
         }
         this.status = StatusScheduling.SCHEDULED;
+    }
+
+    public UUID getSchedulingId() {
+        return id;
     }
 
     public void setSchedule(Schedule schedule) {
@@ -82,9 +94,16 @@ public class Scheduling {
     }
 
     public void completedService() {
-        if(status != StatusScheduling.CONFIRMED) {
-            throw new IllegalStateException("Só é possivel completar serviços de horários CONFIRMADOS.");
+        LocalDateTime scheduledDateTime = LocalDateTime.of(this.date, this.start);
+
+        if (scheduledDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Não é permitido concluir serviços agendados para datas/horários futuros.");
         }
+
+        if (this.status != StatusScheduling.CONFIRMED) {
+            throw new IllegalStateException("Só é possível completar serviços de horários CONFIRMADOS.");
+        }
+
         this.status = StatusScheduling.COMPLETED;
     }
 

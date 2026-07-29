@@ -19,15 +19,6 @@ public class SchedulingController {
         this.schedulingService = schedulingService;
     }
 
-    // --- 0. GET DAILY SCHEDULE ---
-    @GetMapping("/daily")
-    public ResponseEntity<List<AppointmentResponse>> getDailySchedule(
-            @RequestParam UUID specialistId,
-            @RequestParam LocalDate date) {
-
-        List<AppointmentResponse> schedulings = schedulingService.getDailySchedule(specialistId, date);
-        return ResponseEntity.ok(schedulings);
-    }
 
     // 1. create - novo agendamento
     @PostMapping
@@ -42,21 +33,29 @@ public class SchedulingController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newAppointment);
     }
 
-    // 2. update - atualizar status
+    // 2. read - listar os agendamentos do especialista
+    @GetMapping("/daily")
+    public ResponseEntity<List<AppointmentResponse>> getDailySchedule(
+            @RequestParam UUID specialistId,
+            @RequestParam LocalDate date) {
+
+        List<AppointmentResponse> schedulings = schedulingService.getDailySchedule(specialistId, date);
+        return ResponseEntity.ok(schedulings);
+    }
+
+    // 3. update - atualizar status
     @PutMapping("/{id}/status")
     public ResponseEntity<Void> updateStatus(@PathVariable UUID id, @RequestParam String action) {
         schedulingService.updateSchedulingStatus(id, action);
         return ResponseEntity.noContent().build();
     }
 
-    // --- ERROR HANDLER ---
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleBadRequests(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }
 
-// --- DTO ---
 record BookAppointmentRequest(
         UUID clientId,
         UUID specialistId,

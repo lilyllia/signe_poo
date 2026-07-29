@@ -12,7 +12,6 @@ gap: 30px;
 margin-top: 20px;
 }
 
-/* --- FORMS --- */
 .booking-card {
 background: white;
 padding: 25px;
@@ -88,7 +87,6 @@ background-color: #a89a9a;
 cursor: not-allowed;
 }
 
-/* --- AGENDA VIEW --- */
 .agenda-card {
 background: #fdfaf7;
 padding: 25px;
@@ -167,7 +165,6 @@ grid-template-columns: 1fr;
 }
 }
 
-/* STREAMING_CHUNK: Timeline Action Buttons */
 .timeline-actions {
 display: flex;
 gap: 8px;
@@ -199,4 +196,66 @@ transition: 0.2s;
 
 .status-badge {
 padding: 4px 10px;
+}
+
+.btn-checkout { color: #ffffff; background: #2e7d32; border-color: #2e7d32; }
+.btn-checkout:hover { background: #1b5e20; }
+
+.status-MISSED { background-color: #ffe0b2; color: #e65100; }
+
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100vw;
+height: 100vh;
+background: rgba(0, 0, 0, 0.5);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+background: white;
+padding: 30px;
+border-radius: 12px;
+width: 90%;
+max-width: 400px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+animation: slideUp 0.3s ease-out;
+}
+
+.modal-content h3 {
+margin-top: 0;
+color: #5c2d2d;
+border-bottom: 2px solid #eee;
+padding-bottom: 10px;
+}
+
+@keyframes slideUp {
+from { transform: translateY(20px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  
+  .modal-content, .modal-content * { 
+    visibility: visible; 
+  }
+  
+  .modal-content { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    box-shadow: none;
+    border: none;
+  }
+  
+  .submit-btn, .btn-cancel { 
+    display: none; 
+  }
 }
