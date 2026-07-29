@@ -25,7 +25,7 @@ public class PayStub {
     @Column(name = "reference_year", nullable = false)
     private int referenceYear;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "pay_stub_services", joinColumns = @JoinColumn(name = "pay_stub_id"))
     private List<ProcedureValue> services = new ArrayList<>();
 

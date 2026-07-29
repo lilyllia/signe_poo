@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+
 @RestController
-@RequestMapping("/payroll")
+@RequestMapping("/api/payroll")
+@CrossOrigin(origins = "*")
 public class PayStubController {
 
     private final PayStubService payStubService;

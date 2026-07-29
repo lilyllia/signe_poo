@@ -9,6 +9,7 @@ import lombok.Getter;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
@@ -93,9 +94,16 @@ public class Scheduling {
     }
 
     public void completedService() {
-        if(status != StatusScheduling.CONFIRMED) {
-            throw new IllegalStateException("Só é possivel completar serviços de horários CONFIRMADOS.");
+        LocalDateTime scheduledDateTime = LocalDateTime.of(this.date, this.start);
+
+        if (scheduledDateTime.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("Não é permitido concluir serviços agendados para datas/horários futuros.");
         }
+
+        if (this.status != StatusScheduling.CONFIRMED) {
+            throw new IllegalStateException("Só é possível completar serviços de horários CONFIRMADOS.");
+        }
+
         this.status = StatusScheduling.COMPLETED;
     }
 

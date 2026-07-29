@@ -238,3 +238,24 @@ padding-bottom: 10px;
 from { transform: translateY(20px); opacity: 0; }
 to { transform: translateY(0); opacity: 1; }
 }
+
+@media print {
+  body * { visibility: hidden; }
+  
+  .modal-content, .modal-content * { 
+    visibility: visible; 
+  }
+  
+  .modal-content { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    box-shadow: none;
+    border: none;
+  }
+  
+  .submit-btn, .btn-cancel { 
+    display: none; 
+  }
+}

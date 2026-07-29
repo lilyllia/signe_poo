@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import './SchedulingPage.css';
 
-// ADD THIS DICTIONARY NEAR THE TOP
 const STATUS_BR = {
   SCHEDULED: 'Agendado',
   CONFIRMED: 'Confirmado',
@@ -11,7 +10,6 @@ const STATUS_BR = {
   MISSED: 'Faltou'
 };
 
-// ADD THIS DICTIONARY FOR PAYMENTS
 const PAYMENT_METHODS_BR = {
   PIX: 'Pix',
   CREDIT_CARD: 'Cartão de Crédito',
@@ -20,37 +18,32 @@ const PAYMENT_METHODS_BR = {
 };
 
 export default function SchedulingPage() {
-  // --- MASTER DATA (For Dropdowns) ---
   const [clients, setClients] = useState([]);
   const [specialists, setSpecialists] = useState([]);
   const [procedures, setProcedures] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // --- BOOKING FORM STATE ---
   const [form, setForm] = useState({
     clientId: '',
     specialistId: '',
     procedureId: '',
-    date: new Date().toISOString().split('T')[0], // Today's date default
+    date: new Date().toISOString().split('T')[0], 
     start: '09:00'
   });
   const [bookingLoading, setBookingLoading] = useState(false);
 
-  // --- AGENDA STATE ---
   const [agendaDate, setAgendaDate] = useState(new Date().toISOString().split('T')[0]);
   const [agendaSpecialistId, setAgendaSpecialistId] = useState('');
   const [agenda, setAgenda] = useState([]);
   const [agendaLoading, setAgendaLoading] = useState(false);
 
-  // --- CHECKOUT STATE ---
-  const [checkoutModal, setCheckoutModal] = useState({ isOpen: false, appointment: null });
+  const [checkoutModal, setCheckoutModal] = useState({ isOpen: false, scheduling: null });
   const [paymentMethod, setPaymentMethod] = useState('');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   const handleStatusChange = async (schedulingId, action) => {
     try {
       await api.put(`/api/schedulings/${schedulingId}/status?action=${action}`);
-      // Refresh the agenda so the UI updates and slots open up if canceled
       fetchAgenda(); 
     } catch (err) {
       if (err.response?.data) {
@@ -61,12 +54,10 @@ export default function SchedulingPage() {
     }
   };
 
-  // 1. Fetch all required data when the page loads
   useEffect(() => {
     fetchMasterData();
   }, []);
 
-  // 2. Fetch the agenda whenever the Agenda Date or Agenda Specialist changes
   useEffect(() => {
     if (agendaSpecialistId && agendaDate) {
       fetchAgenda();
@@ -75,7 +66,6 @@ export default function SchedulingPage() {
 
   async function fetchMasterData() {
     try {
-      // Execute all 3 API calls at the same time to be fast!
       const [clientsRes, empsRes, procsRes] = await Promise.all([
         api.get('/api/clients'),
         api.get('/api/employees'),
@@ -85,11 +75,9 @@ export default function SchedulingPage() {
       setClients(clientsRes.data);
       setProcedures(procsRes.data);
       
-      // Filter employees to ONLY show Specialists (people who can actually do procedures)
       const specList = empsRes.data.filter(emp => emp.commissionPercentage !== undefined);
       setSpecialists(specList);
 
-      // Pre-select the first specialist for the agenda view if available
       if (specList.length > 0) {
         setAgendaSpecialistId(specList[0].id);
       }
@@ -108,7 +96,6 @@ export default function SchedulingPage() {
       const response = await api.get(`/api/schedulings/daily`, {
         params: { specialistId: agendaSpecialistId, date: agendaDate }
       });
-      // Sort appointments chronologically by start time
       const sortedAgenda = response.data.sort((a, b) => a.start.localeCompare(b.start));
       setAgenda(sortedAgenda);
     } catch (err) {
@@ -119,7 +106,7 @@ export default function SchedulingPage() {
     }
   }
 
-  const handleBookAppointment = async (e) => {
+  const handleBookscheduling = async (e) => {
     e.preventDefault();
     setBookingLoading(true);
 
@@ -127,12 +114,10 @@ export default function SchedulingPage() {
       await api.post('/api/schedulings', form);
       alert('Horário agendado com sucesso!');
       
-      // If the booking was for the currently viewed agenda, refresh it!
       if (form.date === agendaDate && form.specialistId === agendaSpecialistId) {
         fetchAgenda();
       }
       
-      // Reset the time so we don't accidentally double-book
       setForm({ ...form, start: '' }); 
 
     } catch (err) {
@@ -146,25 +131,22 @@ export default function SchedulingPage() {
     }
   };
 
-  // --- CHECKOUT HANDLER ---
   const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
     setCheckoutLoading(true);
 
     try {
-      const schedulingId = checkoutModal.appointment.id;
+      const scheduling = checkoutModal.scheduling;
+      const schedulingId = scheduling.id;
 
-      // 1. Create the payment based on the teammate's endpoint format (@RequestParam)
       const createResponse = await api.post(`/payments?schedulingId=${schedulingId}&paymentMethod=${paymentMethod}`);
       const paymentId = createResponse.data.id;
 
-      // 2. Immediately mark it as Paid (Simulating a fast 1-click checkout)
       await api.put(`/payments/${paymentId}/pay`);
 
       alert('Pagamento registrado com sucesso!');
       
-      // Close modal and refresh agenda
-      setCheckoutModal({ isOpen: false, appointment: null });
+      setCheckoutModal({ isOpen: false, scheduling: null });
       setPaymentMethod('');
       fetchAgenda();
 
@@ -178,7 +160,6 @@ export default function SchedulingPage() {
       setCheckoutLoading(false);
     }
   };
-
   if (loadingData) return <div className="scheduling-page">Carregando módulos do sistema...</div>;
 
   return (
@@ -190,7 +171,7 @@ export default function SchedulingPage() {
         {/* LEFT COLUMN: THE BOOKING FORM */}
         <div className="booking-card">
           <h3>Nova Reserva</h3>
-          <form onSubmit={handleBookAppointment}>
+          <form onSubmit={handleBookscheduling}>
             
             <div className="form-group">
               <label>Cliente *</label>
@@ -300,47 +281,53 @@ export default function SchedulingPage() {
                   <p style={{fontSize: '2em', margin: 0}}>☕</p>
                 </div>
               ) : (
-                agenda.map(appt => (
-                  <div key={appt.id} className="timeline-slot">
+                agenda.map(scheduling => (
+                  <div key={scheduling.id} className="timeline-slot">
                     <div className="timeline-time">
-                      {appt.start.slice(0, 5)} <br/> 
-                      <span style={{fontSize: '0.6em', color: '#888'}}>até {appt.finish.slice(0, 5)}</span>
+                      {scheduling.start.slice(0, 5)} <br/> 
+                      <span style={{fontSize: '0.6em', color: '#888'}}>até {scheduling.finish.slice(0, 5)}</span>
                     </div>
                     <div className="timeline-details" style={{ flex: 1, padding: '0 15px' }}>
-                      <h4>{appt.client.firstName} {appt.client.lastName}</h4>
-                      <p>✂️ {appt.procedure.name}</p>
+                      <h4>{scheduling.client.firstName} {scheduling.client.lastName}</h4>
+                      <p>{scheduling.procedure.name}</p>
                       
                       {/* ACTION BUTTONS BASED ON STATUS */}
-                      <div className="timeline-actions" style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
-                        {appt.status === 'SCHEDULED' && (
+                      <div className="timeline-actions" style={{ marginTop: '10px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {scheduling.status === 'SCHEDULED' && (
                           <>
-                            <button onClick={() => handleStatusChange(appt.id, 'confirm')} className="btn-action btn-confirm">Confirmar</button>
-                            <button onClick={() => handleStatusChange(appt.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
+                            <button onClick={() => handleStatusChange(scheduling.id, 'confirm')} className="btn-action btn-confirm">Confirmar</button>
+                            <button onClick={() => handleStatusChange(scheduling.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
                           </>
                         )}
-                        {appt.status === 'CONFIRMED' && (
+                        {scheduling.status === 'CONFIRMED' && (
                           <>
-                            <button onClick={() => handleStatusChange(appt.id, 'complete')} className="btn-action btn-complete">Concluir</button>
-                            <button onClick={() => handleStatusChange(appt.id, 'miss')} className="btn-action btn-miss">Faltou</button>
-                            <button onClick={() => handleStatusChange(appt.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
+                            <button onClick={() => handleStatusChange(scheduling.id, 'complete')} className="btn-action btn-complete">Concluir</button>
+                            <button onClick={() => handleStatusChange(scheduling.id, 'miss')} className="btn-action btn-miss">Faltou</button>
+                            <button onClick={() => handleStatusChange(scheduling.id, 'cancel')} className="btn-action btn-cancel">Cancelar</button>
                           </>
                         )}
-                        {appt.status === 'COMPLETED' && (
+                        {scheduling.status === 'COMPLETED' && !scheduling.isPaid && (
                           <button 
-                            onClick={() => setCheckoutModal({ isOpen: true, appointment: appt })} 
+                            onClick={() => setCheckoutModal({ isOpen: true, scheduling: scheduling })} 
                             className="btn-action btn-checkout"
                           >
-                            💲 Ir para o Caixa
+                            Ir para o Caixa
                           </button>
+                        )}
+                        {scheduling.status === 'COMPLETED' && scheduling.isPaid && (
+                          <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '6px 12px', borderRadius: '4px', fontWeight: 'bold', fontSize: '0.85em' }}>
+                            ✅ Pago
+                          </span>
                         )}
                       </div>
                     </div>
                     <div>
                       {/* TRANSLATED STATUS BADGE */}
-                      <span className={`status-badge status-${appt.status}`}>
-                        {STATUS_BR[appt.status] || appt.status}
+                      <span className={`status-badge status-${scheduling.status}`}>
+                        {STATUS_BR[scheduling.status] || scheduling.status}
                       </span>
                     </div>
+                    
                   </div>
                 ))
               )}
@@ -355,8 +342,8 @@ export default function SchedulingPage() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Caixa: Finalizar Pagamento</h3>
-            <p><strong>Cliente:</strong> {checkoutModal.appointment.client.firstName} {checkoutModal.appointment.client.lastName}</p>
-            <p><strong>Serviço:</strong> {checkoutModal.appointment.procedure.name}</p>
+            <p><strong>Cliente:</strong> {checkoutModal.scheduling.client.firstName} {checkoutModal.scheduling.client.lastName}</p>
+            <p><strong>Serviço:</strong> {checkoutModal.scheduling.procedure.name}</p>
             
             <form onSubmit={handleCheckoutSubmit} style={{ marginTop: '20px' }}>
               <div className="form-group">
@@ -378,11 +365,12 @@ export default function SchedulingPage() {
                 <button type="submit" className="submit-btn" disabled={checkoutLoading}>
                   {checkoutLoading ? 'Processando...' : 'Confirmar Pagamento'}
                 </button>
+
                 <button 
                   type="button" 
                   className="submit-btn" 
                   style={{ background: '#c62828' }} 
-                  onClick={() => setCheckoutModal({ isOpen: false, appointment: null })}
+                  onClick={() => setCheckoutModal({ isOpen: false, scheduling: null })}
                 >
                   Cancelar
                 </button>

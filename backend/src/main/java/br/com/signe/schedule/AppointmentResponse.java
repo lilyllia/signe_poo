@@ -7,6 +7,7 @@ public record AppointmentResponse(
         String start,
         String finish,
         String status,
+        boolean isPaid,
         ClientSummary client,
         ProcedureSummary procedure
 ) {
